@@ -28,6 +28,9 @@ namespace DGJv3
             IsEnabled = true,
         };
 
+        public UniversalCommand PlayPauseCommand { get; private set; }
+        public UniversalCommand NextCommand { get; private set; }
+
         /// <summary>
         /// 播放器类型
         /// </summary>
@@ -128,6 +131,8 @@ namespace DGJv3
             newSongTimer.Tick += NewSongTimer_Tick;
             updateTimeTimer.Tick += UpdateTimeTimer_Tick;
             this.PropertyChanged += This_PropertyChanged;
+            this.PlayPauseCommand = new UniversalCommand((obj) => { IsPlaying ^= true; });
+            this.NextCommand = new UniversalCommand((obj) => { Next(); });
         }
 
         private void This_PropertyChanged(object sender, PropertyChangedEventArgs e)

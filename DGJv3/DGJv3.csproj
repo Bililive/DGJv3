@@ -70,6 +70,8 @@
     <Compile Include="Downloader.cs" />
     <Compile Include="DownloadStatus.cs" />
     <Compile Include="EnumerationExtension.cs" />
+    <Compile Include="PlayerVolumeConverter.cs" />
+    <Compile Include="NotEqualsVisibilityConverter.cs" />
     <Compile Include="LogEvent.cs" />
     <Compile Include="Lrc.cs" />
     <Compile Include="EqualsVisibilityConverter.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="SongInfo.cs" />
     <Compile Include="SongItem.cs" />
     <Compile Include="SongStatus.cs" />
+    <Compile Include="UniversalCommand.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="WaveoutEventDeviceInfo.cs" />
     <Compile Include="Writer.cs" />

@@ -21,6 +21,9 @@ namespace DGJv3
             IsEnabled = true,
         };
 
+        public bool IsModuleDownloading { get => _isModuleDownloading; set => SetField(ref _isModuleDownloading, value); }
+        private bool _isModuleDownloading = false;
+
         public double DownloadSpeed { get => _downloadSpeed; set => SetField(ref _downloadSpeed, value, nameof(DownloadSpeed)); }
         private double _downloadSpeed = 0;
 
@@ -44,6 +47,9 @@ namespace DGJv3
         {
             if (currentSong == null)
             {
+                if (IsModuleDownloading)
+                    IsModuleDownloading = false;
+
                 foreach (var songItem in Songs)
                 {
                     if (songItem.Status == SongStatus.WaitingDownload)
@@ -66,6 +72,7 @@ namespace DGJv3
             currentSong.Status = SongStatus.Downloading;
             if (currentSong.Module.IsHandleDownlaod)
             {
+                IsModuleDownloading = true;
                 new Thread(() =>
                 {
                     switch (currentSong.Module.SafeDownload(songItem))

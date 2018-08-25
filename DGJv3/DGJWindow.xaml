@@ -19,7 +19,10 @@
         <ResourceDictionary>
             <s:Boolean x:Key="True">True</s:Boolean>
             <s:Boolean x:Key="False">False</s:Boolean>
+            <s:Int32 x:Key="Zero">0</s:Int32>
             <local:EqualsVisibilityConverter x:Key="EqualsVisibilityConverter"/>
+            <local:PlayerVolumeConverter x:Key="PlayerVolumeConverter"/>
+            <local:NotEqualsVisibilityConverter x:Key="NotEqualsVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
@@ -34,9 +37,9 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="12*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding Player}">
@@ -57,22 +60,70 @@
                           SelectedValue="{Binding DirectSoundDevice}" DisplayMemberPath="Description" SelectedValuePath="Guid"/>
         </Grid>
 
+        <Grid Grid.Row="1" Grid.Column="1" DataContext="{Binding Downloader}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
+                缓存歌曲中
+                <LineBreak/>
+                <TextBlock Text="{Binding DownloadSpeed,StringFormat=0.## KiB/s}"/>
+            </TextBlock>
+            <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                 Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
+                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="50" IsIndeterminate="True"/>
+            </materialDesign:Card>
+
+            <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
+                缓存歌曲中
+            </TextBlock>
+            <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                 Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
+                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True"/>
+            </materialDesign:Card>
+
+        </Grid>
+
         <Grid Grid.Row="2" Grid.ColumnSpan="2" DataContext="{Binding Player}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="20 0">
-                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" HorizontalAlignment="Left">
+            <StackPanel Margin="20 0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding PlayPauseCommand}">
                     <Grid>
-                        <materialDesign:PackIcon Kind="Play" Width="24" Height="24"
+                        <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconPlay"
                                                  Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource False}}"/>
-                        <materialDesign:PackIcon Kind="Pause" Width="24" Height="24"
+                        <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconPause"
                                                  Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}"/>
                     </Grid>
                 </Button>
+                <Button Margin="8 0" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding NextCommand}">
+                    <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSkipNext"/>
+                </Button>
+                <TextBlock FontSize="24" TextAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Width="80" Text="{Binding CurrentTime,StringFormat=mm\\:ss}" TextAlignment="Right"/>
+                    /
+                    <TextBlock Width="80" Text="{Binding TotalTime,StringFormat=mm\\:ss}" TextAlignment="Left"/>
+                </TextBlock>
+                <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" VerticalAlignment="Center" Margin="15,10,0,0"/>
+                <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}" Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                <materialDesign:PopupBox Margin="30,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <materialDesign:PopupBox.ToggleContent>
+                        <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSettings"/>
+                    </materialDesign:PopupBox.ToggleContent>
+                    <TextBlock>
+                        测试测试测试
+                    </TextBlock>
+                </materialDesign:PopupBox>
             </StackPanel>
-            <materialDesign:PackIcon Kind="VolumeHigh" />
+            <Slider Margin="15,0" Grid.Row="1" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Window>

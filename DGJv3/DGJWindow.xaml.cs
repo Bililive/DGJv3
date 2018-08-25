@@ -40,6 +40,17 @@ namespace DGJv3
             Downloader = new Downloader(Songs);
 
             InitializeComponent();
+
+            #region PackIcon 问题 workaround
+
+            PackIconPause.Kind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
+            PackIconPlay.Kind = MaterialDesignThemes.Wpf.PackIconKind.Play;
+            PackIconVolumeHigh.Kind = MaterialDesignThemes.Wpf.PackIconKind.VolumeHigh;
+            PackIconSkipNext.Kind = MaterialDesignThemes.Wpf.PackIconKind.SkipNext;
+            PackIconSettings.Kind = MaterialDesignThemes.Wpf.PackIconKind.Settings;
+
+            #endregion
+
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
