@@ -35,6 +35,12 @@
       <HintPath>.\BilibiliDM_PluginFramework.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialDesignColors.1.1.3\lib\net45\MaterialDesignColors.dll</HintPath>
+    </Reference>
+    <Reference Include="MaterialDesignThemes.Wpf, Version=2.4.1.1101, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialDesignThemes.2.4.1.1101\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
     </Reference>
@@ -63,7 +69,10 @@
     </Compile>
     <Compile Include="Downloader.cs" />
     <Compile Include="DownloadStatus.cs" />
+    <Compile Include="EnumerationExtension.cs" />
+    <Compile Include="LogEvent.cs" />
     <Compile Include="Lrc.cs" />
+    <Compile Include="EqualsVisibilityConverter.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerStatus.cs" />
     <Compile Include="PlayerType.cs" />
@@ -73,6 +82,7 @@
     <Compile Include="SongItem.cs" />
     <Compile Include="SongStatus.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="WaveoutEventDeviceInfo.cs" />
     <Compile Include="Writer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,4 +95,11 @@
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterResolveReferences">
+    <ItemGroup>
+      <EmbeddedResource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll'">
+        <LogicalName>%(ReferenceCopyLocalPaths.DestinationSubDirectory)%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
 </Project>

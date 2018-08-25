@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,20 @@ namespace DGJv3
 {
     internal static class Utilities
     {
+        public static IEnumerable<WaveoutEventDeviceInfo> WaveoutEventDevices
+        {
+            get
+            {
+                var infos = new List<WaveoutEventDeviceInfo>();
+                for (int i = -1; i < WaveOut.DeviceCount; i++)
+                {
+                    var caps = WaveOut.GetCapabilities(i);
+                    infos.Add(new WaveoutEventDeviceInfo(i, caps.ProductName));
+                }
+                return infos;
+            }
+        }
+
         private static string AssemblyDirectory
         {
             get

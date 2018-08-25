@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,12 +33,19 @@ namespace DGJv3
 
         public DGJWindow(DGJMain dGJMain)
         {
+            DataContext = this;
             PluginMain = dGJMain;
             Songs = new ObservableCollection<SongItem>();
             Player = new Player(Songs);
             Downloader = new Downloader(Songs);
 
             InitializeComponent();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
         }
     }
 }

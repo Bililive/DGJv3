@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 
 namespace DGJv3
@@ -27,22 +28,50 @@ namespace DGJv3
             IsEnabled = true,
         };
 
-        public PlayerType PlayerType { get; set; }
+        /// <summary>
+        /// 播放器类型
+        /// </summary>
+        public PlayerType PlayerType { get => _playerType; set => SetField(ref _playerType, value); }
+        private PlayerType _playerType;
 
-        public Guid DirectSoundDevice { get; set; }
+        /// <summary>
+        /// DirectSound 设备
+        /// </summary>
+        public Guid DirectSoundDevice { get => _directSoundDevice; set => SetField(ref _directSoundDevice, value); }
+        private Guid _directSoundDevice;
 
-        public int WaveoutEventDevice { get; set; }
+        /// <summary>
+        /// WaveoutEvent 设备
+        /// </summary>
+        public int WaveoutEventDevice { get => _waveoutEventDevice; set => SetField(ref _waveoutEventDevice, value); }
+        private int _waveoutEventDevice;
 
+        /// <summary>
+        /// 当前播放时间
+        /// </summary>
         public TimeSpan CurrentTime
         {
             get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.CurrentTime;
             set { if (mp3FileReader != null) mp3FileReader.CurrentTime = value; }
         }
 
+        /// <summary>
+        /// 歌曲全长
+        /// </summary>
         public TimeSpan TotalTime { get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.TotalTime; }
 
-        public bool IsPlaying { get => Status == PlayerStatus.Playing; }
+        /// <summary>
+        /// 当前是否正在播放歌曲
+        /// </summary>
+        public bool IsPlaying
+        {
+            get => Status == PlayerStatus.Playing;
+            set { if (value) Play(); else Pause(); }
+        }
 
+        /// <summary>
+        /// 当前歌曲播放状态
+        /// </summary>
         public PlayerStatus Status
         {
             get
@@ -68,6 +97,9 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 播放器音量
+        /// </summary>
         public float Volume
         {
             get => _volume;
@@ -106,6 +138,11 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 定时器 100ms 调用一次
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UpdateTimeTimer_Tick(object sender, EventArgs e)
         {
             if (mp3FileReader != null)
@@ -114,6 +151,11 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 定时器 1s 调用一次
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewSongTimer_Tick(object sender, EventArgs e)
         {
             if (Songs.Count > 0 && Songs[0].Status == SongStatus.WaitingPlay)
@@ -122,6 +164,10 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 加载歌曲并开始播放
+        /// </summary>
+        /// <param name="songItem"></param>
         private void LoadSong(SongItem songItem)
         {
             currentSong = songItem;
@@ -143,6 +189,9 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
         }
 
+        /// <summary>
+        /// 卸载歌曲并善后
+        /// </summary>
         private void UnloadSong()
         {
             try
@@ -176,6 +225,10 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
         }
 
+        /// <summary>
+        /// 根据当前设置初始化 IWavePlayer
+        /// </summary>
+        /// <returns></returns>
         private IWavePlayer CreateIWavePlayer()
         {
             switch (PlayerType)
@@ -189,6 +242,9 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 对外接口 继续
+        /// </summary>
         public void Play()
         {
             if (wavePlayer != null)
@@ -198,6 +254,9 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 对外接口 暂停
+        /// </summary>
         public void Pause()
         {
             if (wavePlayer != null)
@@ -207,6 +266,9 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 对外接口 下一首
+        /// </summary>
         public void Next()
         {
             if (wavePlayer != null)
@@ -216,12 +278,15 @@ namespace DGJv3
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected bool SetField<T>(ref T field, T value, string propertyName)
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
         }
+
+        public event LogEvent LogEvent;
+        private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }
 }

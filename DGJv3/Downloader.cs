@@ -5,8 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Threading;
 
 namespace DGJv3
@@ -42,16 +42,17 @@ namespace DGJv3
 
         private void NewSongTimer_Tick(object sender, EventArgs e)
         {
-            newSongTimer.Stop();
-            foreach (var songItem in Songs)
+            if (currentSong == null)
             {
-                if (songItem.Status == SongStatus.WaitingDownload)
+                foreach (var songItem in Songs)
                 {
-                    Download(songItem);
-                    break;
+                    if (songItem.Status == SongStatus.WaitingDownload)
+                    {
+                        Download(songItem);
+                        break;
+                    }
                 }
             }
-            // newSongTimer.Start();
         }
 
         private void Download(SongItem songItem)
@@ -62,19 +63,28 @@ namespace DGJv3
 
             currentSong = songItem;
 
-            songItem.Status = SongStatus.Downloading;
-            if (songItem.Module.IsHandleDownlaod)
+            currentSong.Status = SongStatus.Downloading;
+            if (currentSong.Module.IsHandleDownlaod)
             {
-                switch (songItem.Module.SafeDownload(songItem)) // TODO:异步下载
+                new Thread(() =>
                 {
-                    case DownloadStatus.Success:
-                        songItem.Status = SongStatus.WaitingPlay;
-                        return;
-                    case DownloadStatus.Failed:
-                    default:
-                        Songs.Remove(songItem);
-                        return;
+                    switch (currentSong.Module.SafeDownload(songItem))
+                    {
+                        case DownloadStatus.Success:
+                            currentSong.Status = SongStatus.WaitingPlay;
+                            break;
+                        case DownloadStatus.Failed:
+                        default:
+                            Songs.Remove(currentSong);
+                            break;
+                    }
+                    currentSong = null;
+                })
+                {
+                    Name = "SongModuleDownload",
+                    IsBackground = true,
                 }
+                .Start();
             }
             else
             {
@@ -86,12 +96,20 @@ namespace DGJv3
                     webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.450 Safari/537.35");
 
                     webClient.DownloadFileAsync(new Uri(songItem.GetDownloadUrl()), songItem.FilePath);
-
                 }
                 catch (Exception ex)
                 {
-                    // TODO: fix
-                    throw;
+                    try
+                    {
+                        webClient.Dispose();
+                        webClient = null;
+                    }
+                    catch (Exception)
+                    { }
+
+                    Songs.Remove(currentSong);
+                    currentSong = null;
+                    Log("启动下载错误 " + currentSong.SongName, ex);
                 }
             }
         }
@@ -118,8 +136,13 @@ namespace DGJv3
             else
             {
                 Songs.Remove(currentSong);
+                Log("下载错误 " + currentSong.SongName, e.Error);
             }
 
+            DownloadSpeed = 0;
+            DownloadPercentage = 0;
+
+            currentSong = null;
             webClient.Dispose();
             webClient = null;
         }
@@ -142,12 +165,15 @@ namespace DGJv3
         private static string CleanFileName(string fileName) => Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected bool SetField<T>(ref T field, T value, string propertyName)
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
         }
+
+        public event LogEvent LogEvent;
+        private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }
 }

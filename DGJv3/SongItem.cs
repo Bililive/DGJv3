@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DGJv3
 {
@@ -99,14 +100,14 @@ namespace DGJv3
         /// 歌曲状态
         /// </summary>
         public SongStatus Status
-        { get => _status; internal set => SetField(ref _status, value, nameof(Status)); }
+        { get => _status; internal set => SetField(ref _status, value); }
 
         private SongStatus _status;
 
         internal string GetDownloadUrl() => Module.SafeGetDownloadUrl(this);
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected bool SetField<T>(ref T field, T value, string propertyName)
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
