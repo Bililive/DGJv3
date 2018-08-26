@@ -31,6 +31,10 @@ namespace DGJv3
 
         public Writer Writer { get; set; }
 
+        public UniversalCommand RemoveSongCommmand { get; set; }
+
+        public UniversalCommand RemoveAndBlacklistSongCommand { get; set; }
+
         public DGJWindow(DGJMain dGJMain)
         {
             DataContext = this;
@@ -38,6 +42,22 @@ namespace DGJv3
             Songs = new ObservableCollection<SongItem>();
             Player = new Player(Songs);
             Downloader = new Downloader(Songs);
+
+            RemoveSongCommmand = new UniversalCommand((songobj) =>
+            {
+                if (songobj != null && songobj is SongItem songItem)
+                {
+                    // Songs.Remove(songItem);
+                }
+            });
+
+            RemoveAndBlacklistSongCommand = new UniversalCommand((songobj) =>
+            {
+                if (songobj != null && songobj is SongItem songItem)
+                {
+
+                }
+            });
 
             InitializeComponent();
 
