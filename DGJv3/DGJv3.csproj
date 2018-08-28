@@ -72,6 +72,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -92,6 +93,12 @@
     <Compile Include="DownloadStatus.cs" />
     <Compile Include="EnumerationExtension.cs" />
     <Compile Include="FuckRegsvr32.cs" />
+    <Compile Include="InternalModule\LwlApiBaidu.cs" />
+    <Compile Include="InternalModule\LwlApiBaseModule.cs" />
+    <Compile Include="InternalModule\LwlApiKugou.cs" />
+    <Compile Include="InternalModule\LwlApiNetease.cs" />
+    <Compile Include="InternalModule\LwlApiTencent.cs" />
+    <Compile Include="InternalModule\LwlApiXiami.cs" />
     <Compile Include="NullSearchModule.cs" />
     <Compile Include="PlayerVolumeConverter.cs" />
     <Compile Include="NotEqualsVisibilityConverter.cs" />

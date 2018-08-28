@@ -269,6 +269,10 @@ namespace DGJv3
         }
         */
 
+        internal Action<string> _log { get; set; }
+
+        protected internal void Log(string log) => _log?.Invoke(ModuleName + " " + log);
+
         private void WriteError(Exception exception, string description)
         {
             try

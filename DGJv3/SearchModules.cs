@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DGJv3.InternalModule;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -24,6 +25,21 @@ namespace DGJv3
             NullModule = new NullSearchModule();
             Modules.Add(NullModule);
 
+            Modules.Add(new LwlApiNetease());
+            Modules.Add(new LwlApiTencent());
+            Modules.Add(new LwlApiKugou());
+            Modules.Add(new LwlApiBaidu());
+            Modules.Add(new LwlApiXiami());
+
+            void logaction(string log)
+            {
+                Log(log);
+            }
+
+            foreach (var m in Modules)
+            {
+                m._log = logaction;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -36,6 +52,6 @@ namespace DGJv3
         }
 
         public event LogEvent LogEvent;
-        private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
+        private void Log(string message, Exception exception = null) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }
 }
