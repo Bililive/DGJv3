@@ -121,6 +121,14 @@ namespace DGJv3
             }
         }
 
+        internal void CancelDownload()
+        {
+            if (webClient != null)
+            {
+                webClient.CancelAsync();
+            }
+        }
+
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             bool success = true;

@@ -16,6 +16,8 @@ namespace DGJv3
 
         private ObservableCollection<SongItem> Songs;
 
+        private Dispatcher dispatcher;
+
         private DispatcherTimer newSongTimer = new DispatcherTimer(DispatcherPriority.Normal)
         {
             Interval = TimeSpan.FromSeconds(1),
@@ -128,6 +130,7 @@ namespace DGJv3
         public Player(ObservableCollection<SongItem> songs)
         {
             Songs = songs;
+            dispatcher = Dispatcher.CurrentDispatcher;
             newSongTimer.Tick += NewSongTimer_Tick;
             updateTimeTimer.Tick += UpdateTimeTimer_Tick;
             this.PropertyChanged += This_PropertyChanged;
@@ -249,37 +252,55 @@ namespace DGJv3
 
         /// <summary>
         /// 对外接口 继续
+        /// <para>
+        /// 注：此接口可在任意线程同步调用
+        /// </para>
         /// </summary>
         public void Play()
         {
-            if (wavePlayer != null)
+            dispatcher.Invoke(() =>
             {
-                wavePlayer.Play();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-            }
+                if (wavePlayer != null)
+                {
+                    wavePlayer.Play();
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                }
+            });
         }
 
         /// <summary>
         /// 对外接口 暂停
+        /// <para>
+        /// 注：此接口可在任意线程同步调用
+        /// </para>
         /// </summary>
         public void Pause()
         {
-            if (wavePlayer != null)
+            dispatcher.Invoke(() =>
             {
-                wavePlayer.Play();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-            }
+                if (wavePlayer != null)
+                {
+                    wavePlayer.Play();
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                }
+            });
         }
 
         /// <summary>
         /// 对外接口 下一首
+        /// <para>
+        /// 注：此接口可在任意线程同步调用
+        /// </para>
         /// </summary>
         public void Next()
         {
-            if (wavePlayer != null)
+            dispatcher.Invoke(() =>
             {
-                UnloadSong();
-            }
+                if (wavePlayer != null)
+                {
+                    UnloadSong();
+                }
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

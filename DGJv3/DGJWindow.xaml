@@ -48,9 +48,9 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=SelectedItem}">
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}">
                         <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
-                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=SelectedItem}"/>
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
@@ -137,25 +137,50 @@
                 <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" VerticalAlignment="Center" Margin="15,10,0,0"/>
                 <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
-                <materialDesign:PopupBox Margin="30,0" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                         DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
-                                         StaysOpen="True" PlacementMode="TopAndAlignCentres">
+
+                <materialDesign:PopupBox Margin="30,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}" StaysOpen="True" PlacementMode="TopAndAlignCentres">
                     <materialDesign:PopupBox.ToggleContent>
                         <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSettings"/>
                     </materialDesign:PopupBox.ToggleContent>
-                    <Grid Width="300" Margin="8">
+                    <Grid Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8">设置</TextBlock>
-                        <Grid Grid.Row="1">
 
-                        </Grid>
+                        <StackPanel Margin="5,0" Orientation="Vertical" Grid.Row="1">
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                                <TextBlock TextAlignment="Center" VerticalAlignment="Center">测试测试测试测试测试</TextBlock>
+                            </StackPanel>
+                            <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"  materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                            <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}" materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                        </StackPanel>
+
                     </Grid>
                 </materialDesign:PopupBox>
+
             </StackPanel>
             <Slider Margin="15,0" Grid.Row="1" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>
         </Grid>
+        <Grid Width="300" Margin="8" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8">设置</TextBlock>
+            <StackPanel Margin="5,0" Orientation="Vertical" Grid.Row="1">
+                <StackPanel Margin="5" Orientation="Horizontal">
+                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">测试测试测试测试测试</TextBlock>
+                </StackPanel>
+                <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum}" materialDesign:HintAssist.Hint="总共最大点歌数量" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum}" materialDesign:HintAssist.Hint="单人最大点歌数量" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+            </StackPanel>
+        </Grid>
+
     </Grid>
 </Window>

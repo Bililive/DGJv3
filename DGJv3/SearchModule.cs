@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DGJv3
 {
@@ -57,6 +56,23 @@ namespace DGJv3
         /// </summary>
         public bool IsPlaylistSupported
         { get; protected set; }
+
+        /// <summary>
+        /// 搜索模块的唯一ID
+        /// </summary>
+        internal string UniqueId
+        {
+            get
+            {
+                if (uniqueId == null)
+                    using (MD5 md5 = MD5.Create())
+                        uniqueId = BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes($"{GetType().FullName}{ModuleName}{ModuleAuthor}"))).Replace("-", "");
+                return uniqueId;
+            }
+        }
+        private string uniqueId = null;
+
+
 
         /// <summary>
         /// <para>设置搜索模块信息</para>

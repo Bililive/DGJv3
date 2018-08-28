@@ -31,6 +31,10 @@ namespace DGJv3
 
         public Writer Writer { get; set; }
 
+        public SearchModules SearchModules { get; set; }
+
+        public DanmuHandler DanmuHandler { get; set; }
+
         public UniversalCommand RemoveSongCommmand { get; set; }
 
         public UniversalCommand RemoveAndBlacklistSongCommand { get; set; }
@@ -42,6 +46,8 @@ namespace DGJv3
             Songs = new ObservableCollection<SongItem>();
             Player = new Player(Songs);
             Downloader = new Downloader(Songs);
+            SearchModules = new SearchModules();
+            DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules);
 
             RemoveSongCommmand = new UniversalCommand((songobj) =>
             {

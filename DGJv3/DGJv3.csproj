@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -82,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="DanmuHandler.cs" />
     <Compile Include="DGJMain.cs" />
     <Compile Include="DGJWindow.xaml.cs">
       <DependentUpon>DGJWindow.xaml</DependentUpon>
@@ -90,6 +92,7 @@
     <Compile Include="DownloadStatus.cs" />
     <Compile Include="EnumerationExtension.cs" />
     <Compile Include="FuckRegsvr32.cs" />
+    <Compile Include="NullSearchModule.cs" />
     <Compile Include="PlayerVolumeConverter.cs" />
     <Compile Include="NotEqualsVisibilityConverter.cs" />
     <Compile Include="LogEvent.cs" />
@@ -100,6 +103,7 @@
     <Compile Include="PlayerType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SearchModule.cs" />
+    <Compile Include="SearchModules.cs" />
     <Compile Include="SongInfo.cs" />
     <Compile Include="SongItem.cs" />
     <Compile Include="SongStatus.cs" />
