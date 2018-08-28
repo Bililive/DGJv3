@@ -44,7 +44,7 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <ListView>
+        <ListView ItemsSource="{Binding Songs}">
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"

@@ -44,10 +44,17 @@ namespace DGJv3
             DataContext = this;
             PluginMain = dGJMain;
             Songs = new ObservableCollection<SongItem>();
+
             Player = new Player(Songs);
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
             DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules);
+
+            Player.LogEvent += (sender, e) => { PluginMain.Log("播放 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Downloader.LogEvent += (sender, e) => { PluginMain.Log("下载 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            //Writer.Logevent += (sender, e) => { PluginMain.Log("文本输出 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            SearchModules.LogEvent += (sender, e) => { PluginMain.Log("搜索模块 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            DanmuHandler.LogEvent += (sender, e) => { PluginMain.Log("弹幕 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
 
             RemoveSongCommmand = new UniversalCommand((songobj) =>
             {
@@ -66,6 +73,8 @@ namespace DGJv3
             });
 
             InitializeComponent();
+
+            PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
 
             #region PackIcon 问题 workaround
 

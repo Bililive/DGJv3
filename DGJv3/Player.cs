@@ -180,6 +180,8 @@ namespace DGJv3
         {
             currentSong = songItem;
 
+            currentSong.Status = SongStatus.Playing;
+
             wavePlayer = CreateIWavePlayer();
             mp3FileReader = new Mp3FileReader(currentSong.FilePath);
             sampleChannel = new SampleChannel(mp3FileReader)
