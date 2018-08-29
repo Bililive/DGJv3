@@ -104,8 +104,6 @@ namespace DGJv3
 
         private SongStatus _status;
 
-        internal string GetDownloadUrl() => Module.SafeGetDownloadUrl(this);
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {

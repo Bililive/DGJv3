@@ -31,6 +31,8 @@ namespace DGJv3
             Modules.Add(new LwlApiBaidu());
             Modules.Add(new LwlApiXiami());
 
+            // TODO: 加载外置拓展
+
             void logaction(string log)
             {
                 Log(log);
@@ -40,6 +42,10 @@ namespace DGJv3
             {
                 m._log = logaction;
             }
+
+            // TODO: 保存加载搜索模块选择
+            PrimaryModule = Modules[1];
+            SecondaryModule = Modules[2];
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

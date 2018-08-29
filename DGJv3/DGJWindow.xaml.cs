@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace DGJv3
 
         public ObservableCollection<SongItem> Songs { get; set; }
 
+        public ObservableCollection<SongInfo> Playlist { get; set; }
+
         public Player Player { get; set; }
 
         public Downloader Downloader { get; set; }
@@ -44,6 +47,7 @@ namespace DGJv3
             DataContext = this;
             PluginMain = dGJMain;
             Songs = new ObservableCollection<SongItem>();
+            Playlist = new ObservableCollection<SongInfo>();
 
             Player = new Player(Songs);
             Downloader = new Downloader(Songs);
@@ -60,7 +64,7 @@ namespace DGJv3
             {
                 if (songobj != null && songobj is SongItem songItem)
                 {
-                    // Songs.Remove(songItem);
+                    songItem.Remove(Songs, Downloader, Player);
                 }
             });
 
@@ -68,11 +72,14 @@ namespace DGJv3
             {
                 if (songobj != null && songobj is SongItem songItem)
                 {
-
+                    songItem.Remove(Songs, Downloader, Player);
+                    // TODO: 添加黑名单
                 }
             });
 
             InitializeComponent();
+
+            ApplyConfig(Config.Load());
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
 
@@ -86,6 +93,42 @@ namespace DGJv3
 
             #endregion
 
+        }
+
+        private void ApplyConfig(Config config)
+        {
+            Player.PlayerType = config.PlayerType;
+            Player.DirectSoundDevice = config.DirectSoundDevice;
+            Player.WaveoutEventDevice = config.WaveoutEventDevice;
+            Player.Volume = config.Volume;
+            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
+            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+            DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
+            DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
+        }
+
+        private Config GatherConfig() => new Config()
+        {
+            PlayerType = Player.PlayerType,
+            DirectSoundDevice = Player.DirectSoundDevice,
+            WaveoutEventDevice = Player.WaveoutEventDevice,
+            Volume = Player.Volume,
+            PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
+            SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
+            MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
+            MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
+        };
+
+        internal void DeInit()
+        {
+            Config.Write(GatherConfig());
+            try
+            {
+                Directory.Delete(Utilities.SongsCacheDirectoryPath, true);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

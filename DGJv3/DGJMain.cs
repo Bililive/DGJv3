@@ -29,10 +29,8 @@ namespace DGJv3
             window.Activate();
         }
 
-        public override void DeInit()
-        {
+        public override void DeInit() => window.DeInit();
 
-        }
 
         private static Assembly OnResolveAssembly(object sender, ResolveEventArgs args)
         {

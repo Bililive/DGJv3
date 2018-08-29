@@ -36,11 +36,11 @@ namespace DGJv3
             }
         }
 
-        internal static readonly string ConfigPath = Path.Combine(AssemblyDirectory, "点歌姬");
+        internal static readonly string DataDirectoryPath = Path.Combine(AssemblyDirectory, "点歌姬");
 
-        internal static readonly string SongsCachePath = Path.Combine(ConfigPath, "歌曲缓存");
+        internal static readonly string SongsCacheDirectoryPath = Path.Combine(DataDirectoryPath, "歌曲缓存");
 
-
+        internal static readonly string ConfigFilePath = Path.Combine(DataDirectoryPath, "config.json");
 
     }
 }

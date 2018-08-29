@@ -7,12 +7,15 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace DGJv3
 {
     class Downloader : INotifyPropertyChanged
     {
+        private Dispatcher dispatcher;
+
         private ObservableCollection<SongItem> Songs;
 
         private DispatcherTimer newSongTimer = new DispatcherTimer(DispatcherPriority.Normal)
@@ -41,6 +44,7 @@ namespace DGJv3
         {
             Songs = songs;
             newSongTimer.Tick += NewSongTimer_Tick;
+            dispatcher = Dispatcher.CurrentDispatcher;
         }
 
         private void NewSongTimer_Tick(object sender, EventArgs e)
@@ -54,20 +58,21 @@ namespace DGJv3
                 {
                     if (songItem.Status == SongStatus.WaitingDownload)
                     {
-                        Download(songItem);
+                        currentSong = songItem;
+                        Task.Run(() => Download());
                         break;
                     }
                 }
             }
         }
 
-        private void Download(SongItem songItem)
+        private void Download()
         {
-            songItem.FilePath = Path.Combine(Utilities.SongsCachePath, CleanFileName($"{songItem.ModuleName}{songItem.SongName}{songItem.SongId}{DateTime.Now.ToBinary().ToString("X")}.mp3.点歌姬缓存"));
+            currentSong.FilePath = Path.Combine(Utilities.SongsCacheDirectoryPath, CleanFileName($"{currentSong.ModuleName}{currentSong.SongName}{currentSong.SongId}{DateTime.Now.ToBinary().ToString("X")}.mp3.点歌姬缓存"));
 
-            try { Directory.CreateDirectory(Utilities.SongsCachePath); } catch (Exception) { }
+            try { Directory.CreateDirectory(Utilities.SongsCacheDirectoryPath); } catch (Exception) { }
 
-            currentSong = songItem;
+            // currentSong = songItem;
 
             currentSong.Status = SongStatus.Downloading;
             if (currentSong.Module.IsHandleDownlaod)
@@ -75,14 +80,14 @@ namespace DGJv3
                 IsModuleDownloading = true;
                 new Thread(() =>
                 {
-                    switch (currentSong.Module.SafeDownload(songItem))
+                    switch (currentSong.Module.SafeDownload(currentSong))
                     {
                         case DownloadStatus.Success:
                             currentSong.Status = SongStatus.WaitingPlay;
                             break;
                         case DownloadStatus.Failed:
                         default:
-                            Songs.Remove(currentSong);
+                            dispatcher.Invoke(() => Songs.Remove(currentSong));
                             break;
                     }
                     currentSong = null;
@@ -98,11 +103,12 @@ namespace DGJv3
                 try
                 {
                     webClient = new WebClient();
+
                     webClient.DownloadProgressChanged += OnDownloadProgressChanged;
                     webClient.DownloadFileCompleted += OnDownloadFileCompleted;
                     webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.450 Safari/537.35");
 
-                    webClient.DownloadFileAsync(new Uri(songItem.GetDownloadUrl()), songItem.FilePath);
+                    webClient.DownloadFileAsync(new Uri(currentSong.GetDownloadUrl()), currentSong.FilePath);
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +120,7 @@ namespace DGJv3
                     catch (Exception)
                     { }
 
-                    Songs.Remove(currentSong);
+                    dispatcher.Invoke(() => Songs.Remove(currentSong));
                     currentSong = null;
                     Log("启动下载错误 " + currentSong.SongName, ex);
                 }
@@ -150,7 +156,7 @@ namespace DGJv3
             }
             else
             {
-                Songs.Remove(currentSong);
+                dispatcher.Invoke(() => Songs.Remove(currentSong));
                 Log("下载错误 " + currentSong.SongName, e.Error);
             }
 
@@ -169,9 +175,10 @@ namespace DGJv3
             if (interval.TotalSeconds < 0.5)
             { return; }
 
+            int speed_bps = (int)Math.Floor((e.BytesReceived - lastUpdateDownloadedSize) / interval.TotalSeconds);
+
             lastUpdateDownloadedSize = e.BytesReceived;
             lastUpdateTime = now;
-            int speed_bps = (int)Math.Floor((e.BytesReceived - lastUpdateDownloadedSize) / interval.TotalSeconds);
 
             DownloadSpeed = speed_bps / 1024d;
             DownloadPercentage = e.ProgressPercentage;

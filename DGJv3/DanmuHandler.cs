@@ -117,21 +117,7 @@ namespace DGJv3
                             SongItem songItem = Songs.Last(x => x.UserName == danmakuModel.UserName && x.Status != SongStatus.Playing);
                             if (songItem != null)
                             {
-                                switch (songItem.Status)
-                                {
-                                    case SongStatus.WaitingDownload:
-                                        Songs.Remove(songItem);
-                                        break;
-                                    case SongStatus.Downloading:
-                                        Downloader.CancelDownload();
-                                        break;
-                                    case SongStatus.WaitingPlay:
-                                        try { File.Delete(songItem.FilePath); } catch { }
-                                        Songs.Remove(songItem);
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                songItem.Remove(Songs, Downloader, Player);
                             }
                         });
                     }

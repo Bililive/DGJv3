@@ -10,6 +10,23 @@ namespace DGJv3
     /// </summary>
     public class Lrc
     {
+
+        public static readonly Lrc NoLyric = new Lrc()
+        {
+            Album = string.Empty,
+            Artist = string.Empty,
+            LrcBy = string.Empty,
+            Offset = string.Empty,
+            Title = string.Empty,
+            LrcWord = new Dictionary<double, string>()
+            {
+                {
+                    0d,
+                    "无歌词"
+                }
+            }
+        };
+
         /// <summary>
         /// 歌曲
         /// </summary>
@@ -47,7 +64,33 @@ namespace DGJv3
         /// <summary>
         /// 歌词
         /// </summary>
-        public Dictionary<double, string> LrcWord = new Dictionary<double, string>();
+        public Dictionary<double, string> LrcWord
+        { get; set; }
+
+        public int GetLyric(double seconds, out string current, out string upcoming)
+        {
+            var list = LrcWord.ToList();
+            int i;
+            if (seconds < list[0].Key)
+            {
+                i = 0;
+                current = string.Empty;
+                upcoming = list[0].Value;
+            }
+            else
+            {
+                for (i = 1; i < LrcWord.Count; i++)
+                    if (seconds < list[i].Key)
+                        break;
+
+                current = list[i - 1].Value;
+                if (list.Count > i)
+                    upcoming = list[i].Value;
+                else
+                    upcoming = string.Empty;
+            }
+            return i;
+        }
 
         /// <summary>
         /// 获得歌词信息

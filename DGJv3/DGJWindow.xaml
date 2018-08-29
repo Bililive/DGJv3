@@ -44,26 +44,87 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <ListView ItemsSource="{Binding Songs}">
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}">
-                        <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
-                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                    </MenuItem>
-                </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.View>
-                <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="状态" DisplayMemberBinding="{Binding Status,Converter={StaticResource SongStatusStringConverter}}"/>
-                    <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding SongName}"/>
-                    <GridViewColumn Header="点歌人" DisplayMemberBinding="{Binding UserName}"/>
-                    <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <!-- 播放列表 & 歌词 开始 -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
+            <ListView ItemsSource="{Binding Songs}" Grid.RowSpan="2">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView AllowsColumnReorder="False">
+                        <GridViewColumn Header="状态" DisplayMemberBinding="{Binding Status,Converter={StaticResource SongStatusStringConverter}}"/>
+                        <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding SongName}"/>
+                        <GridViewColumn Header="点歌人" DisplayMemberBinding="{Binding UserName}"/>
+                        <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <materialDesign:Card Grid.Row="1" Margin="8,0" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="7,0"/>
+                            <Setter Property="FontSize" Value="18"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Player.CurrentLyric}"/>
+                    <TextBlock Text="{Binding Player.UpcomingLyric}" Grid.Row="1"/>
+                </Grid>
+            </materialDesign:Card>
+
+        </Grid>
+        <!-- 播放列表 & 歌词 结束 -->
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ListView ItemsSource="{Binding Songs}" Grid.RowSpan="2">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView AllowsColumnReorder="False">
+                        <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding SongName}"/>
+                        <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <StackPanel Orientation="Vertical" Margin="5" Grid.Row="1">
+                <ComboBox Width="250" ItemsSource="{Binding SearchModules.Modules}"
+                          SelectedValue="{Binding SearchModules.PrimaryModule}" DisplayMemberPath="ModuleName"
+                          materialDesign:HintAssist.Hint="首选歌曲搜索引擎"/>
+                <ComboBox Width="250" ItemsSource="{Binding SearchModules.Modules}"
+                          SelectedValue="{Binding SearchModules.SecondaryModule}" DisplayMemberPath="ModuleName"
+                          materialDesign:HintAssist.Hint="备用歌曲搜索引擎"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 播放设备开始 -->
         <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding Player}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -81,7 +142,9 @@
                           ItemsSource="{Binding Source={x:Static naudiowave:DirectSoundOut.Devices}}"
                           SelectedValue="{Binding DirectSoundDevice}" DisplayMemberPath="Description" SelectedValuePath="Guid"/>
         </Grid>
+        <!-- 播放设备结束 -->
 
+        <!-- 下载状态开始 -->
         <Grid Grid.Row="1" Grid.Column="1" DataContext="{Binding Downloader}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -109,9 +172,10 @@
                                  Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
                 <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True"/>
             </materialDesign:Card>
-
         </Grid>
+        <!-- 下载状态结束 -->
 
+        <!-- 播放器 Grid 开始 -->
         <Grid Grid.Row="2" Grid.ColumnSpan="2" DataContext="{Binding Player}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
@@ -137,7 +201,7 @@
                 <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" VerticalAlignment="Center" Margin="15,10,0,0"/>
                 <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
-
+                <!-- 设置开始 -->
                 <materialDesign:PopupBox Margin="30,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}" StaysOpen="True" PlacementMode="TopAndAlignCentres">
                     <materialDesign:PopupBox.ToggleContent>
                         <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSettings"/>
@@ -156,31 +220,15 @@
                             </StackPanel>
                             <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"  materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
                             <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}" materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
-                        </StackPanel>
 
+                        </StackPanel>
                     </Grid>
                 </materialDesign:PopupBox>
-
+                <!-- 设置结束 -->
             </StackPanel>
-            <Slider Margin="15,0" Grid.Row="1" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>
+            <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0" Maximum="{Binding TotalTime.TotalSeconds}" SmallChange="0.5" LargeChange="3" VerticalAlignment="Center"/>
         </Grid>
-        <Grid Width="300" Margin="8" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8">设置</TextBlock>
-            <StackPanel Margin="5,0" Orientation="Vertical" Grid.Row="1">
-                <StackPanel Margin="5" Orientation="Horizontal">
-                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" />
-                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">测试测试测试测试测试</TextBlock>
-                </StackPanel>
-                <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum}" materialDesign:HintAssist.Hint="总共最大点歌数量" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
-                <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum}" materialDesign:HintAssist.Hint="单人最大点歌数量" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
-            </StackPanel>
-        </Grid>
+        <!-- 播放器 Grid 结束 -->
 
     </Grid>
 </Window>

@@ -113,6 +113,7 @@
     <Compile Include="SearchModules.cs" />
     <Compile Include="SongInfo.cs" />
     <Compile Include="SongItem.cs" />
+    <Compile Include="SongItemExtension.cs" />
     <Compile Include="SongStatus.cs" />
     <Compile Include="SongStatusStringConverter.cs" />
     <Compile Include="UniversalCommand.cs" />

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 
@@ -58,6 +59,15 @@ namespace DGJv3
         {
             get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.CurrentTime;
             set { if (mp3FileReader != null) mp3FileReader.CurrentTime = value; }
+        }
+
+        /// <summary>
+        /// 当前播放时间秒数
+        /// </summary>
+        public double CurrentTimeDouble
+        {
+            get => CurrentTime.TotalSeconds;
+            set => CurrentTime = TimeSpan.FromSeconds(value);
         }
 
         /// <summary>
@@ -119,6 +129,18 @@ namespace DGJv3
         }
         private float _volume = 1f;
 
+        /// <summary>
+        /// 当前歌词
+        /// </summary>
+        public string CurrentLyric { get => currentLyric; set => SetField(ref currentLyric, value); }
+        private string currentLyric;
+
+        /// <summary>
+        /// 下一句歌词       
+        /// </summary>
+        public string UpcomingLyric { get => upcomingLyric; set => SetField(ref upcomingLyric, value); }
+        private string upcomingLyric;
+
         private IWavePlayer wavePlayer = null;
 
         private Mp3FileReader mp3FileReader = null;
@@ -126,6 +148,8 @@ namespace DGJv3
         private SampleChannel sampleChannel = null;
 
         private SongItem currentSong = null;
+
+        private int currentLyricIndex = -1;
 
         public Player(ObservableCollection<SongItem> songs)
         {
@@ -144,6 +168,10 @@ namespace DGJv3
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPlaying)));
             }
+            else if (e.PropertyName == nameof(CurrentTime))
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTimeDouble)));
+            }
         }
 
         /// <summary>
@@ -156,6 +184,17 @@ namespace DGJv3
             if (mp3FileReader != null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+
+                if (currentSong != null)
+                {
+                    var index = currentSong.Lyric.GetLyric(CurrentTimeDouble, out string current, out string upcoming);
+                    if (index != currentLyricIndex)
+                    {
+                        currentLyricIndex = index;
+                        CurrentLyric = current;
+                        UpcomingLyric = upcoming;
+                    }
+                }
             }
         }
 
@@ -206,11 +245,13 @@ namespace DGJv3
         {
             try
             {
+                wavePlayer.Stop();
                 wavePlayer.Dispose();
-                wavePlayer = null;
+                mp3FileReader.Close();
                 mp3FileReader.Dispose();
-                mp3FileReader = null;
+                wavePlayer = null;
                 sampleChannel = null;
+                mp3FileReader = null;
             }
             catch (Exception)
             {
@@ -224,9 +265,12 @@ namespace DGJv3
             {
             }
 
-            Songs.Remove(currentSong);
+            dispatcher.Invoke(() => Songs.Remove(currentSong));
 
             currentSong = null;
+
+            CurrentLyric = string.Empty;
+            UpcomingLyric = string.Empty;
 
             // TODO: PlayerBroadcasterLoop 功能
 
@@ -260,14 +304,12 @@ namespace DGJv3
         /// </summary>
         public void Play()
         {
-            dispatcher.Invoke(() =>
+            if (wavePlayer != null)
             {
-                if (wavePlayer != null)
-                {
-                    wavePlayer.Play();
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-                }
-            });
+                wavePlayer.Play();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+            }
+
         }
 
         /// <summary>
@@ -278,14 +320,12 @@ namespace DGJv3
         /// </summary>
         public void Pause()
         {
-            dispatcher.Invoke(() =>
+            if (wavePlayer != null)
             {
-                if (wavePlayer != null)
-                {
-                    wavePlayer.Play();
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-                }
-            });
+                wavePlayer.Pause();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+            }
+
         }
 
         /// <summary>
@@ -296,13 +336,10 @@ namespace DGJv3
         /// </summary>
         public void Next()
         {
-            dispatcher.Invoke(() =>
+            if (wavePlayer != null)
             {
-                if (wavePlayer != null)
-                {
-                    UnloadSong();
-                }
-            });
+                UnloadSong();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
