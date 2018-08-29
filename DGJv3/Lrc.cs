@@ -69,6 +69,12 @@ namespace DGJv3
 
         public int GetLyric(double seconds, out string current, out string upcoming)
         {
+            if (LrcWord.Count < 1)
+            {
+                current = "无歌词";
+                upcoming = string.Empty;
+                return -1;
+            }
             var list = LrcWord.ToList();
             int i;
             if (seconds < list[0].Key)

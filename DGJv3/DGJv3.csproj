@@ -83,6 +83,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlackListItem.cs" />
+    <Compile Include="BlackListType.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="DanmuHandler.cs" />
     <Compile Include="DGJMain.cs" />

@@ -13,9 +13,11 @@ namespace DGJv3
 {
     class Player : INotifyPropertyChanged
     {
-        // TODO: 歌词
+        private Random random = new Random();
 
         private ObservableCollection<SongItem> Songs;
+
+        private ObservableCollection<SongInfo> Playlist;
 
         private Dispatcher dispatcher;
 
@@ -139,6 +141,13 @@ namespace DGJv3
         /// 下一句歌词       
         /// </summary>
         public string UpcomingLyric { get => upcomingLyric; set => SetField(ref upcomingLyric, value); }
+
+        /// <summary>
+        /// 是否使用空闲歌单
+        /// </summary>
+        public bool IsPlaylistEnabled { get => _isPlaylistEnabled; set => SetField(ref _isPlaylistEnabled, value); }
+        private bool _isPlaylistEnabled;
+
         private string upcomingLyric;
 
         private IWavePlayer wavePlayer = null;
@@ -151,9 +160,10 @@ namespace DGJv3
 
         private int currentLyricIndex = -1;
 
-        public Player(ObservableCollection<SongItem> songs)
+        public Player(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist)
         {
             Songs = songs;
+            Playlist = playlist;
             dispatcher = Dispatcher.CurrentDispatcher;
             newSongTimer.Tick += NewSongTimer_Tick;
             updateTimeTimer.Tick += UpdateTimeTimer_Tick;
@@ -208,6 +218,12 @@ namespace DGJv3
             if (Songs.Count > 0 && Songs[0].Status == SongStatus.WaitingPlay)
             {
                 LoadSong(Songs[0]);
+            }
+
+            if (Songs.Count == 0 && IsPlaylistEnabled && Playlist.Count > 0)
+            {
+                var index = random.Next(0, Playlist.Count - 1);
+                Songs.Add(new SongItem(Playlist[index], "空闲歌单")); // TODO: 点歌人名字
             }
         }
 

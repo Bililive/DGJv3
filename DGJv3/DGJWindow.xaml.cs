@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -28,6 +29,8 @@ namespace DGJv3
 
         public ObservableCollection<SongInfo> Playlist { get; set; }
 
+        public ObservableCollection<BlackListItem> Blacklist { get; set; }
+
         public Player Player { get; set; }
 
         public Downloader Downloader { get; set; }
@@ -42,14 +45,23 @@ namespace DGJv3
 
         public UniversalCommand RemoveAndBlacklistSongCommand { get; set; }
 
+        public UniversalCommand RemovePlaylistInfoCommmand { get; set; }
+
+        public UniversalCommand ClearPlaylistCommand { get; set; }
+
+        public UniversalCommand RemoveBlacklistInfoCommmand { get; set; }
+
+        public UniversalCommand ClearBlacklistCommand { get; set; }
+
         public DGJWindow(DGJMain dGJMain)
         {
             DataContext = this;
             PluginMain = dGJMain;
             Songs = new ObservableCollection<SongItem>();
             Playlist = new ObservableCollection<SongInfo>();
+            Blacklist = new ObservableCollection<BlackListItem>();
 
-            Player = new Player(Songs);
+            Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
             DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules);
@@ -77,6 +89,32 @@ namespace DGJv3
                 }
             });
 
+            RemovePlaylistInfoCommmand = new UniversalCommand((songobj) =>
+            {
+                if (songobj != null && songobj is SongInfo songInfo)
+                {
+                    Playlist.Remove(songInfo);
+                }
+            });
+
+            ClearPlaylistCommand = new UniversalCommand((e) =>
+            {
+                Playlist.Clear();
+            });
+
+            RemoveBlacklistInfoCommmand = new UniversalCommand((blackobj) =>
+            {
+                if (blackobj != null && blackobj is BlackListItem blackListItem)
+                {
+                    Blacklist.Remove(blackListItem);
+                }
+            });
+
+            ClearBlacklistCommand = new UniversalCommand((x) =>
+            {
+                Blacklist.Clear();
+            });
+
             InitializeComponent();
 
             ApplyConfig(Config.Load());
@@ -85,11 +123,12 @@ namespace DGJv3
 
             #region PackIcon 问题 workaround
 
-            PackIconPause.Kind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
-            PackIconPlay.Kind = MaterialDesignThemes.Wpf.PackIconKind.Play;
-            PackIconVolumeHigh.Kind = MaterialDesignThemes.Wpf.PackIconKind.VolumeHigh;
-            PackIconSkipNext.Kind = MaterialDesignThemes.Wpf.PackIconKind.SkipNext;
-            PackIconSettings.Kind = MaterialDesignThemes.Wpf.PackIconKind.Settings;
+            PackIconPause.Kind = PackIconKind.Pause;
+            PackIconPlay.Kind = PackIconKind.Play;
+            PackIconVolumeHigh.Kind = PackIconKind.VolumeHigh;
+            PackIconSkipNext.Kind = PackIconKind.SkipNext;
+            PackIconSettings.Kind = PackIconKind.Settings;
+            PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
 
             #endregion
 
@@ -129,6 +168,69 @@ namespace DGJv3
             catch (Exception)
             {
             }
+        }
+
+        private void DialogAddSongs(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongsTextBox.Text))
+            {
+                var keyword = AddSongsTextBox.Text;
+                SongInfo songInfo = null;
+
+                if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+
+                if (songInfo == null)
+                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+
+                if (songInfo == null)
+                    return;
+
+                Songs.Add(new SongItem(songInfo, "主播"));
+            }
+            AddSongsTextBox.Text = string.Empty;
+        }
+
+        private void DialogAddSongsToPlaylist(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongPlaylistTextBox.Text))
+            {
+                var keyword = AddSongPlaylistTextBox.Text;
+                SongInfo songInfo = null;
+
+                if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+
+                if (songInfo == null)
+                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+
+                if (songInfo == null)
+                    return;
+
+                Playlist.Add(songInfo);
+            }
+            AddSongPlaylistTextBox.Text = string.Empty;
+        }
+
+        private void DialogAddPlaylist(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddPlaylistTextBox.Text))
+            {
+                var keyword = AddPlaylistTextBox.Text;
+                List<SongInfo> songInfoList = null;
+
+                if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
+                    songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
+
+                if (songInfoList == null)
+                    return;
+
+                foreach (var item in songInfoList)
+                    Playlist.Add(item);
+            }
+            AddPlaylistTextBox.Text = string.Empty;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

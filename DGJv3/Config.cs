@@ -22,6 +22,9 @@ namespace DGJv3
         [JsonProperty("pvol")]
         public float Volume { get; set; }
 
+        [JsonProperty("pple")]
+        public bool IsPlaylistEnabled { get; set; }
+
         [JsonProperty("mpid")]
         public string PrimaryModuleId { get; set; }
 
