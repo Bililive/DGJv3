@@ -64,7 +64,7 @@ namespace DGJv3
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
-            DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules);
+            DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
 
             Player.LogEvent += (sender, e) => { PluginMain.Log("播放 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             Downloader.LogEvent += (sender, e) => { PluginMain.Log("下载 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
@@ -148,6 +148,14 @@ namespace DGJv3
             SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
+
+            Playlist.Clear();
+            foreach (var item in config.Playlist)
+                Playlist.Add(item);
+
+            Blacklist.Clear();
+            foreach (var item in config.Blacklist)
+                Blacklist.Add(item);
         }
 
         /// <summary>
@@ -164,6 +172,8 @@ namespace DGJv3
             SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
+            Playlist = Playlist.ToArray(),
+            Blacklist = Blacklist.ToArray(),
         };
 
         /// <summary>

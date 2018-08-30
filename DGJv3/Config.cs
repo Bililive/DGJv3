@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DGJv3
 {
+    [JsonArray(allowNullItems: false)]
     class Config
     {
         [JsonProperty("ptyp")]
@@ -37,8 +38,11 @@ namespace DGJv3
         [JsonProperty("dmps")]
         public uint MaxPersonSongNum { get; set; }
 
+        [JsonProperty("plst")]
+        public SongInfo[] Playlist { get; set; } = new SongInfo[0];
 
-
+        [JsonProperty("blst")]
+        public BlackListItem[] Blacklist { get; set; } = new BlackListItem[0];
 
         public Config()
         {

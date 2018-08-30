@@ -33,5 +33,19 @@ namespace DGJv3
         }
 
         internal static string GetDownloadUrl(this SongItem songItem) => songItem.Module.SafeGetDownloadUrl(songItem);
+
+        internal static bool IsInBlacklist(this SongInfo songInfo, IEnumerable<BlackListItem> blackList)
+        {
+            return blackList.ToArray().Any(x =>
+            {
+                switch (x.BlackType)
+                {
+                    case BlackListType.Id: return songInfo.Id.Equals(x.Content);
+                    case BlackListType.Name: return songInfo.Name.IndexOf(x.Content, StringComparison.CurrentCultureIgnoreCase) > -1;
+                    case BlackListType.Singer: return songInfo.SingersText.IndexOf(x.Content, StringComparison.CurrentCultureIgnoreCase) > -1;
+                    default: return false;
+                }
+            });
+        }
     }
 }

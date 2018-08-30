@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -6,7 +7,10 @@ namespace DGJv3
 {
     class BlackListItem : INotifyPropertyChanged
     {
+        [JsonProperty("type")]
         public BlackListType BlackType { get => blackType; set => SetField(ref blackType, value); }
+
+        [JsonProperty("cont")]
         public string Content { get => content; set => SetField(ref content, value); }
 
         private BlackListType blackType = BlackListType.Id;

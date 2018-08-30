@@ -14,6 +14,8 @@ namespace DGJv3
     {
         private ObservableCollection<SongItem> Songs;
 
+        private ObservableCollection<BlackListItem> Blacklist;
+
         private Player Player;
 
         private Downloader Downloader;
@@ -34,13 +36,14 @@ namespace DGJv3
         public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
         private uint _maxPersonSongNum;
 
-        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules)
+        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
             Songs = songs;
             Player = player;
             Downloader = downloader;
             SearchModules = searchModules;
+            Blacklist = blacklist;
         }
 
 
@@ -148,6 +151,12 @@ namespace DGJv3
                 if (songInfo == null)
                     return;
 
+                if (songInfo.IsInBlacklist(Blacklist))
+                {
+                    Log($"歌曲 {songInfo.Name} 在黑名单中");
+                    return;
+                }
+
                 dispatcher.Invoke(callback: () =>
                 {
                     if (CanAddSong(danmakuModel.UserName))
@@ -181,6 +190,6 @@ namespace DGJv3
         }
 
         public event LogEvent LogEvent;
-        private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
+        private void Log(string message, Exception exception = null) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }
 }

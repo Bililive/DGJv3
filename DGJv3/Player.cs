@@ -160,6 +160,8 @@ namespace DGJv3
 
         private int currentLyricIndex = -1;
 
+        private int lastPlaylistIndex = -1;
+
         public Player(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist)
         {
             Songs = songs;
@@ -222,7 +224,14 @@ namespace DGJv3
 
             if (Songs.Count == 0 && IsPlaylistEnabled && Playlist.Count > 0)
             {
-                var index = random.Next(0, Playlist.Count - 1);
+                int index = -1;
+                int time = 0;
+                do
+                {
+                    index = random.Next(0, Playlist.Count);
+                    time++;
+                } while (index == lastPlaylistIndex && time < 3);
+
                 Songs.Add(new SongItem(Playlist[index], "空闲歌单")); // TODO: 点歌人名字
             }
         }
