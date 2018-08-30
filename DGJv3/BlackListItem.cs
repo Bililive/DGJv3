@@ -9,8 +9,16 @@ namespace DGJv3
         public BlackListType BlackType { get => blackType; set => SetField(ref blackType, value); }
         public string Content { get => content; set => SetField(ref content, value); }
 
-        private BlackListType blackType;
-        private string content;
+        private BlackListType blackType = BlackListType.Id;
+        private string content = string.Empty;
+
+        internal BlackListItem()
+        { }
+        internal BlackListItem(BlackListType type, string content)
+        {
+            this.BlackType = type;
+            this.Content = content;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")

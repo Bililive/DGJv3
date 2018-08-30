@@ -134,6 +134,10 @@ namespace DGJv3
 
         }
 
+        /// <summary>
+        /// 应用设置
+        /// </summary>
+        /// <param name="config"></param>
         private void ApplyConfig(Config config)
         {
             Player.PlayerType = config.PlayerType;
@@ -146,6 +150,10 @@ namespace DGJv3
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
         }
 
+        /// <summary>
+        /// 收集设置
+        /// </summary>
+        /// <returns></returns>
         private Config GatherConfig() => new Config()
         {
             PlayerType = Player.PlayerType,
@@ -158,9 +166,15 @@ namespace DGJv3
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
         };
 
+        /// <summary>
+        /// 弹幕姬退出事件
+        /// </summary>
         internal void DeInit()
         {
             Config.Write(GatherConfig());
+
+            Downloader.CancelDownload();
+            Player.Next();
             try
             {
                 Directory.Delete(Utilities.SongsCacheDirectoryPath, true);
@@ -170,6 +184,14 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 主界面右侧
+        /// 添加歌曲的
+        /// dialog 的
+        /// 关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void DialogAddSongs(object sender, DialogClosingEventArgs eventArgs)
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongsTextBox.Text))
@@ -187,11 +209,19 @@ namespace DGJv3
                 if (songInfo == null)
                     return;
 
-                Songs.Add(new SongItem(songInfo, "主播"));
+                Songs.Add(new SongItem(songInfo, "主播")); // TODO: 点歌人名字
             }
             AddSongsTextBox.Text = string.Empty;
         }
 
+        /// <summary>
+        /// 主界面右侧
+        /// 添加空闲歌曲按钮的
+        /// dialog 的
+        /// 关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void DialogAddSongsToPlaylist(object sender, DialogClosingEventArgs eventArgs)
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongPlaylistTextBox.Text))
@@ -214,6 +244,14 @@ namespace DGJv3
             AddSongPlaylistTextBox.Text = string.Empty;
         }
 
+        /// <summary>
+        /// 主界面右侧
+        /// 添加空闲歌单按钮的
+        /// dialog 的
+        /// 关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void DialogAddPlaylist(object sender, DialogClosingEventArgs eventArgs)
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddPlaylistTextBox.Text))
@@ -224,6 +262,8 @@ namespace DGJv3
                 if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
                     songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
 
+                // 歌单只使用主搜索模块搜索
+
                 if (songInfoList == null)
                     return;
 
@@ -231,6 +271,29 @@ namespace DGJv3
                     Playlist.Add(item);
             }
             AddPlaylistTextBox.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// 黑名单 popupbox 里的
+        /// 添加黑名单按钮的
+        /// dialog 的
+        /// 关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void DialogAddBlacklist(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter.Equals(true)
+                && !string.IsNullOrWhiteSpace(AddBlacklistTextBox.Text)
+                && AddBlacklistComboBox.SelectedValue != null
+                && AddBlacklistComboBox.SelectedValue is BlackListType)
+            {
+                var keyword = AddBlacklistTextBox.Text;
+                var type = (BlackListType)AddBlacklistComboBox.SelectedValue;
+
+                Blacklist.Add(new BlackListItem(type, keyword));
+            }
+            AddBlacklistTextBox.Text = string.Empty;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

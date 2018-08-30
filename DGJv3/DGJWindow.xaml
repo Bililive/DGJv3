@@ -21,6 +21,7 @@
             <s:Boolean x:Key="True">True</s:Boolean>
             <s:Boolean x:Key="False">False</s:Boolean>
             <s:Int32 x:Key="Zero">0</s:Int32>
+            <local:BlackListTypeStringConverter x:Key="BlackListTypeStringConverter"/>
             <local:SongStatusStringConverter x:Key="SongStatusStringConverter"/>
             <local:EqualsVisibilityConverter x:Key="EqualsVisibilityConverter"/>
             <local:PlayerVolumeConverter x:Key="PlayerVolumeConverter"/>
@@ -123,7 +124,7 @@
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">歌名</TextBlock>
                                 <TextBox x:Name="AddSongsTextBox"></TextBox>
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                     CommandParameter="{StaticResource True}"
@@ -148,7 +149,7 @@
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">歌名</TextBlock>
                                 <TextBox x:Name="AddSongPlaylistTextBox"></TextBox>
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                     CommandParameter="{StaticResource True}"
@@ -173,7 +174,7 @@
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">歌单ID</TextBlock>
                                 <TextBox x:Name="AddPlaylistTextBox"></TextBox>
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                     CommandParameter="{StaticResource True}"
@@ -280,7 +281,8 @@
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
                     <!-- 设置开始 -->
-                    <materialDesign:PopupBox Margin="30,0,0,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}" StaysOpen="True" PlacementMode="TopAndAlignCentres">
+                    <materialDesign:PopupBox Margin="30,0,0,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
+                                             StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSettings"/>
                         </materialDesign:PopupBox.ToggleContent>
@@ -296,15 +298,18 @@
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Player.IsPlaylistEnabled}"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">没有点歌时从列表随机播放</TextBlock>
                                 </StackPanel>
-                                <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"  materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
-                                <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}" materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                         materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                         materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
 
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 设置结束 -->
                     <!-- 歌曲黑名单开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres">
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconFilterRemove"/>
                         </materialDesign:PopupBox.ToggleContent>
@@ -315,7 +320,8 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">歌曲黑名单</TextBlock>
-                            <ListView ItemsSource="{Binding Playlist}" Grid.Row="1">
+                            <ListView ItemsSource="{Binding Blacklist}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
+                                <!--
                                 <ListView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="移除" Command="{Binding RemoveBlacklistInfoCommmand}"
@@ -323,18 +329,74 @@
                                         <MenuItem Header="清空全部" Command="{Binding ClearBlacklistCommand}"/>
                                     </ContextMenu>
                                 </ListView.ContextMenu>
+                                -->
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="False">
-                                        <GridViewColumn Header="类型" DisplayMemberBinding="{Binding BlackType}"/>
-                                        <GridViewColumn Header="内容" DisplayMemberBinding="{Binding Content}"/>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="删除" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveBlacklistInfoCommmand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="类型">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding BlackType,Converter={StaticResource BlackListTypeStringConverter}}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="内容">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding Content}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2">
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                    materialDesign:DialogHost.DialogClosingAttached="DialogAddBlacklist">
+                                    <Button.CommandParameter>
+                                        <StackPanel Margin="16">
+                                            <TextBlock FontSize="16">添加黑名单</TextBlock>
+                                            <ComboBox Width="120" ItemsSource="{Binding Source={local:Enumeration {x:Type local:BlackListType}}}"
+                                                DisplayMemberPath="Description" SelectedValuePath="Value" x:Name="AddBlacklistComboBox"
+                                                materialDesign:HintAssist.Hint="黑名单类型" materialDesign:HintAssist.IsFloating="True"/>
+                                            <TextBox x:Name="AddBlacklistTextBox" materialDesign:HintAssist.Hint="黑名单内容" materialDesign:HintAssist.IsFloating="True"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
+                                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                    CommandParameter="{StaticResource True}"
+                                                    HorizontalAlignment="Center">
+                                                    确定
+                                                </Button>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True"
+                                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                    CommandParameter="{StaticResource False}"
+                                                    HorizontalAlignment="Center">
+                                                    取消
+                                                </Button>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Button.CommandParameter>
+                                    新建黑名单
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 歌曲黑名单结束 -->
                 </StackPanel>
-                <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0" Maximum="{Binding TotalTime.TotalSeconds}" SmallChange="0.5" LargeChange="3" VerticalAlignment="Center"/>
+
+                <!-- 播放器进度条 -->
+                <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0"
+                        Maximum="{Binding TotalTime.TotalSeconds}" SmallChange="0.5" LargeChange="3" VerticalAlignment="Center"/>
+
             </Grid>
             <!-- 播放器 Grid 结束 -->
 
