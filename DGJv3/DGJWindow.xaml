@@ -26,6 +26,9 @@
             <local:EqualsVisibilityConverter x:Key="EqualsVisibilityConverter"/>
             <local:PlayerVolumeConverter x:Key="PlayerVolumeConverter"/>
             <local:NotEqualsVisibilityConverter x:Key="NotEqualsVisibilityConverter"/>
+            <Style TargetType="TextBox">
+                <Setter Property="ContextMenuService.IsEnabled" Value="False"/>
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
