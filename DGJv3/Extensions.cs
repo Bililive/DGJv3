@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DGJv3
 {
-    static class SongItemExtension
+    static class Extensions
     {
         internal static void Remove(this SongItem songItem, ObservableCollection<SongItem> songList, Downloader downloader, Player player)
         {
@@ -46,6 +46,23 @@ namespace DGJv3
                     default: return false;
                 }
             });
+        }
+
+        internal static string ToStatusString(this SongStatus songStatus)
+        {
+            switch (songStatus)
+            {
+                case SongStatus.WaitingDownload:
+                    return "等待下载";
+                case SongStatus.Downloading:
+                    return "正在下载";
+                case SongStatus.WaitingPlay:
+                    return "等待播放";
+                case SongStatus.Playing:
+                    return "正在播放";
+                default:
+                    return "？？？？";
+            }
         }
     }
 }

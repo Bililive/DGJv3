@@ -20,6 +20,11 @@ namespace DGJv3
             this.PluginAuth = "Genteure";
             this.PluginCont = "dgj3@genteure.com";
 
+            try
+            {
+                Directory.CreateDirectory(Utilities.DataDirectoryPath);
+            }
+            catch (Exception) { }
             window = new DGJWindow(this);
         }
 

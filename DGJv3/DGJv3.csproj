@@ -70,6 +70,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Scriban, Version=1.2.5.0, Culture=neutral, PublicKeyToken=5675fb69b15f2433, processorArchitecture=MSIL">
+      <HintPath>..\packages\Scriban.Signed.1.2.5\lib\net40\Scriban.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -116,7 +119,7 @@
     <Compile Include="SearchModules.cs" />
     <Compile Include="SongInfo.cs" />
     <Compile Include="SongItem.cs" />
-    <Compile Include="SongItemExtension.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="SongStatus.cs" />
     <Compile Include="SongStatusStringConverter.cs" />
     <Compile Include="UniversalCommand.cs" />

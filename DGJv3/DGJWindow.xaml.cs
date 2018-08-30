@@ -65,10 +65,11 @@ namespace DGJv3
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
             DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
+            Writer = new Writer(Songs, Playlist, Player, DanmuHandler);
 
             Player.LogEvent += (sender, e) => { PluginMain.Log("播放 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             Downloader.LogEvent += (sender, e) => { PluginMain.Log("下载 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            //Writer.Logevent += (sender, e) => { PluginMain.Log("文本输出 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Writer.LogEvent += (sender, e) => { PluginMain.Log("文本输出 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             SearchModules.LogEvent += (sender, e) => { PluginMain.Log("搜索模块 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             DanmuHandler.LogEvent += (sender, e) => { PluginMain.Log("弹幕 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
 
@@ -85,7 +86,7 @@ namespace DGJv3
                 if (songobj != null && songobj is SongItem songItem)
                 {
                     songItem.Remove(Songs, Downloader, Player);
-                    // TODO: 添加黑名单
+                    Blacklist.Add(new BlackListItem(BlackListType.Id, songItem.SongId));
                 }
             });
 
@@ -129,6 +130,7 @@ namespace DGJv3
             PackIconSkipNext.Kind = PackIconKind.SkipNext;
             PackIconSettings.Kind = PackIconKind.Settings;
             PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
+            PackIconFileDocument.Kind = PackIconKind.FileDocument;
 
             #endregion
 
@@ -144,14 +146,20 @@ namespace DGJv3
             Player.DirectSoundDevice = config.DirectSoundDevice;
             Player.WaveoutEventDevice = config.WaveoutEventDevice;
             Player.Volume = config.Volume;
+            Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
             SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
             SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
+            Writer.ScribanTemplate = config.ScribanTemplate;
 
             Playlist.Clear();
             foreach (var item in config.Playlist)
-                Playlist.Add(item);
+            {
+                item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
+                if (item.Module != null)
+                    Playlist.Add(item);
+            }
 
             Blacklist.Clear();
             foreach (var item in config.Blacklist)
@@ -168,10 +176,12 @@ namespace DGJv3
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
             Volume = Player.Volume,
+            IsPlaylistEnabled = Player.IsPlaylistEnabled,
             PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
             SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
+            ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
         };

@@ -308,7 +308,7 @@
                     </materialDesign:PopupBox>
                     <!-- 设置结束 -->
                     <!-- 歌曲黑名单开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres"
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="8,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconFilterRemove"/>
@@ -391,6 +391,35 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 歌曲黑名单结束 -->
+                    <!-- 文本输出开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconFileDocument"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8" Width="800" Height="400">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--
+                            <TextBlock Grid.ColumnSpan="2">文本输出设置</TextBlock>
+                            -->
+                            <TextBox Text="{Binding Writer.ScribanTemplate,Delay=800,UpdateSourceTrigger=PropertyChanged}"
+                                     TextAlignment="Left" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0"
+                                     Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="模板"
+                                     TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>
+                            <TextBox Text="{Binding Writer.Result}" IsEnabled="False" TextAlignment="Left"
+                                     VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1"
+                                     Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="输出预览"
+                                     TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>
+                        </Grid>
+                    </materialDesign:PopupBox>
+                    <!-- 文本输出结束 -->
                 </StackPanel>
 
                 <!-- 播放器进度条 -->

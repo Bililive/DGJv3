@@ -26,7 +26,7 @@ namespace DGJv3.InternalModule
 
         internal LwlApiBaseModule()
         {
-
+            IsPlaylistSupported = true;
         }
 
         protected override DownloadStatus Download(SongItem item)
@@ -59,7 +59,63 @@ namespace DGJv3.InternalModule
 
         protected override List<SongInfo> GetPlaylist(string keyword)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<SongInfo> songInfos = new List<SongInfo>();
+
+                JObject playlist = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/playlist?id={HttpUtility.UrlEncode(keyword)}"));
+
+                if (playlist["code"]?.ToObject<int>() == 200)
+                {
+                    List<JToken> result = (playlist["result"] as JArray).ToList();
+
+                    if (result.Count() > 30)
+                        result = result.Take(30).ToList();
+
+                    result.ForEach(song =>
+                    {
+                        try
+                        {
+                            var songInfo = new SongInfo(this,
+                                song["id"].ToString(),
+                                song["name"].ToString(),
+                                (song["artist"] as JArray).Select(x => x.ToString()).ToArray());
+
+                            try
+                            {
+                                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
+                                if (lobj["result"]["lwlyric"] != null)
+                                {
+                                    songInfo.Lyric = lobj["result"]["lwlyric"].ToString();
+                                }
+                                else if (lobj["result"]["lyric"] != null)
+                                {
+                                    songInfo.Lyric = lobj["result"]["lyric"].ToString();
+                                }
+                                else
+                                { Log("歌词获取错误(id:" + songInfo.Id + ")"); }
+                            }
+                            catch (Exception ex)
+                            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + songInfo.Id + ")"); }
+
+                            songInfos.Add(songInfo);
+                        }
+                        catch (Exception) { }
+                    });
+
+                    return songInfos;
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Log("获取歌单信息时出错 " + ex.Message);
+                return null;
+            }
         }
 
         protected override SongInfo Search(string keyword)
@@ -99,7 +155,7 @@ namespace DGJv3.InternalModule
                     this,
                     song["id"].ToString(),
                     song["name"].ToString(),
-                    (song["artist"] as JArray).ToArray().Select(x => x.ToString()).ToArray()
+                    (song["artist"] as JArray).Select(x => x.ToString()).ToArray()
                 );
             }
             catch (Exception ex)
