@@ -1,4 +1,5 @@
 ﻿using BilibiliDM_PluginFramework;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -99,38 +100,13 @@ namespace DGJv3
                     usr.Update = true;
                 }
                 //然后添加金钱到用户
+                JObject staff = JObject.Parse(danmakuModel.RawData);
 
-                string output = $"感谢{usr.Name}支持的";
-                switch (danmakuModel.GiftName)
-                {//把基础的支持了，活动就算了每个月都要改//干脆就说限定辣条和金币充值(
-                    case "辣条":
-                        usr.Money += 10 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{10 * danmakuModel.GiftCount}点歌币";
-                        break;
-                    case "flag":
-                        usr.Money += 200 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{200 * danmakuModel.GiftCount}点歌币";
-                        break;
-                    case "干杯":
-                        usr.Money += 626 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{626 * danmakuModel.GiftCount}点歌币";
-                        break;
-                    case "金币":
-                        usr.Money += 1000 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{1000 * danmakuModel.GiftCount}点歌币";
-                        break;
-                    case "吃瓜":
-                        usr.Money += 100 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{100 * danmakuModel.GiftCount}点歌币";
-                        break;
-                    default:
-                        usr.Money += 1000 * danmakuModel.GiftCount;
-                        output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{1000 * danmakuModel.GiftCount}点歌币";
-                        break;
-                }
+                int gifmon = staff["data"]["price"].ToObject<int>();
+                usr.Money += gifmon * danmakuModel.GiftCount;//加钱             
 
                 //返回消息
-                Log(output);//这里暂时用log代替输出，后续等@队长改
+                Log($"感谢{usr.Name}支持的{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{gifmon * danmakuModel.GiftCount}点歌币");//这里暂时用log代替输出，后续等@队长改
             }
 
             //判断是不是文本消息
@@ -198,7 +174,7 @@ namespace DGJv3
                             else if (usr.Money > SetGiftPlaySpend)
                             {
                                 usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
-                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount()*10)}折) 剩余{usr.Money}");
+                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
                                 DanmuAddSong(danmakuModel, rest);
                             }
                         }
