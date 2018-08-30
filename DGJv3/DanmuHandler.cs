@@ -102,7 +102,7 @@ namespace DGJv3
 
                 string output = $"感谢{usr.Name}支持的";
                 switch (danmakuModel.GiftName)
-                {//把基础的支持了，活动就算了每个月都要改
+                {//把基础的支持了，活动就算了每个月都要改//干脆就说限定辣条和金币充值(
                     case "辣条":
                         usr.Money += 10 * danmakuModel.GiftCount;
                         output += $"{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{10 * danmakuModel.GiftCount}点歌币";
@@ -197,8 +197,8 @@ namespace DGJv3
                             }
                             else if (usr.Money > SetGiftPlaySpend)
                             {
-                                usr.Money -= SetGiftPlaySpend;
-                                Log(danmakuModel.UserName + $":点歌成功 花费{SetGiftPlaySpend}点歌币 剩余{usr.Money}");
+                                usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
+                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount()*10)}折) 剩余{usr.Money}");
                                 DanmuAddSong(danmakuModel, rest);
                             }
                         }

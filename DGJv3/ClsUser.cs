@@ -18,7 +18,10 @@ namespace DGJv3
         public int OrderMax = 0;//用户最大可以使用(点歌)命令条数(默认100/天)//清除方法:重启软件
         public int VipLv = 1;//用户vip等级越高，收益越多(打折播放歌曲等
 
-
+        public double Discount()
+        {
+            return 1 - 0.1 * VipLv;
+        }
 
 
         public ClsUser(int uid)
