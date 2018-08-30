@@ -194,7 +194,7 @@ namespace DGJv3.InternalModule
 
             request.Timeout = 10000;
             request.Host = host;
-            request.UserAgent = "DMPlugin_DGJ/3.0-pre-alpha";
+            request.UserAgent = "DMPlugin_DGJ/3.0-alpha";
 
             if (referer != null)
                 request.Referer = referer;

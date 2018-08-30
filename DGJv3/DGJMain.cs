@@ -15,7 +15,7 @@ namespace DGJv3
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
 
             this.PluginName = "点歌姬";
-            this.PluginVer = "3.0-pre-alpha";
+            this.PluginVer = "3.0-alpha";
             this.PluginDesc = "使用弹幕点播歌曲";
             this.PluginAuth = "Genteure";
             this.PluginCont = "dgj3@genteure.com";
