@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DGJv3
 {
-    class ClsUser//用户模块
+    class DMJUser//用户模块
     {
         public int Uid;//用户id
         public int Money = 0;//用户拥有的瓜子 //调整0可以修改为初始赠送多少点歌积分
@@ -22,16 +22,36 @@ namespace DGJv3
         {
             return 1 - 0.1 * VipLv;
         }
+        public DMJUser(string Loadinfo)//加载数据
+        {
+            string[] tmps = Loadinfo.Split('|');
+            try
+            {
+                Uid = Convert.ToInt32(tmps[0]);
+                Money = Convert.ToInt32(tmps[1]);
+            }
+            catch
+            {
+                //出bug给空数据，保存的时候不保存即可
+                Uid = -1;
+                Money = 0;
+            }
+        }
 
-
-        public ClsUser(int uid)
+        public DMJUser(int uid)
         {
             Uid = uid;
         }
-        public ClsUser(int uid,int money)
+        public DMJUser(int uid,int money)
         {
             Uid = uid;
             Money = money;
+        }
+        public string Data()
+        {
+            if (Uid == -1)
+                return "";
+            return Uid + "|" + Money;
         }
     }
 }
