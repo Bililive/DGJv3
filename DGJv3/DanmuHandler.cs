@@ -73,7 +73,10 @@ namespace DGJv3
         public List<ClsUser> users = new List<ClsUser>();
         public bool SetIsGiftPlay = false;//用来判断设置是否进行弹幕点歌
         public int SetGiftPlaySpend = 100; //如果通过礼物点歌，点一首个的价格(瓜子
+        public int SetTPChangeMax = 20;//当满足这么多切歌人数时，进行切歌/可以自行设置
+        public int NowChange = 0;//现在想要切歌的人数//同理这是{切歌当前票数}
         public List<int> HaveUser = new List<int>();//用来快速判断是否有这个用户
+        public List<int> QGUser = new List<int>();//用来快速判断这个用户有没有投票切歌
 
         /// <summary>
         /// 处理弹幕消息
@@ -177,6 +180,10 @@ namespace DGJv3
                                 Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
                                 DanmuAddSong(danmakuModel, rest);
                             }
+                            else
+                            {
+                                Log(danmakuModel.UserName + $":点歌失败 点歌需要{(int)(SetGiftPlaySpend * usr.Discount())}点歌币 而您剩余{usr.Money}点歌币");
+                            }
                         }
                         else
                         {
@@ -199,7 +206,42 @@ namespace DGJv3
                     return;
                 case "投票切歌":
                     {
-                        // TODO: 投票切歌
+                        if (QGUser.Contains(danmakuModel.UserID))
+                        {
+                            Log(danmakuModel.UserName + $":你已经投票过了,请等下一首歌");
+                        }
+                        if (SetIsGiftPlay)
+                        {
+                            ClsUser usr = FindUser(danmakuModel.UserID);
+                            if (usr == null)
+                            {
+                                Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}金瓜子后投票切歌");
+                            }
+                            else if (usr.Money > SetGiftPlaySpend)
+                            {
+                                usr.Money -= (int)(SetGiftPlaySpend * usr.Discount() * 0.5);
+                                Log(danmakuModel.UserName + $":切歌投票成功 花费{(int)(SetGiftPlaySpend * usr.Discount() * 0.5)}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
+                                NowChange += 1;
+                                QGUser.Add(danmakuModel.UserID);
+                            }
+                            else
+                            {
+                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
+                            }
+                        }
+                        else
+                        {
+                            QGUser.Add(danmakuModel.UserID);//记录防止重复投票
+                            NowChange += 1;
+                        }
+
+                        if (NowChange >= SetTPChangeMax)//如果满足切歌+清空
+                        {
+                            NowChange = 0;
+                            QGUser.Clear();
+                            Player.Next();
+                        }
+
                     }
                     return;
                 default:
