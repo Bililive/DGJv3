@@ -46,14 +46,15 @@ namespace DGJv3
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
-            UserLoad();
+
+            UserLoad();//加载数据
         }
 
 
 
         //原本打算写进config里面，看了下感觉不合适，单独立了个存档
 
-        public List<DMJUser> users = new List<DMJUser>();
+        public List<User> Users = new List<User>();
         public bool SetIsGiftPlay = false;//用来判断设置是否进行礼物点歌
         public bool SetIsGiftQG = false;//用来判断设置是否进行礼物切歌
 
@@ -77,11 +78,11 @@ namespace DGJv3
             if (danmakuModel.MsgType == MsgTypeEnum.GiftSend)
             {
                 //首先找有没有用户，没有自动创建
-                DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
+                User usr = Users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
 
                 if (usr == null)//没有自动创建
                 {
-                    usr = new DMJUser(danmakuModel.UserID);
+                    usr = new User(danmakuModel.UserID);
                 }
                 //if (!usr.Update)//关闭热更新
                 //{
@@ -156,7 +157,7 @@ namespace DGJv3
                         //判断是否开启积分点歌
                         if (SetIsGiftPlay)
                         {
-                            DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
+                            User usr = Users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
                             if (usr == null)
                             {
                                 Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}瓜子后开始点歌");
@@ -200,7 +201,7 @@ namespace DGJv3
                         }
                         if (SetIsGiftPlay)
                         {
-                            DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
+                            User usr = Users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
                             if (usr == null)
                             {
                                 Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}金瓜子后投票切歌");
@@ -268,7 +269,7 @@ namespace DGJv3
             FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
             FileStream fs = SaveFile.Create();
             StringBuilder sb = new StringBuilder();
-            foreach (DMJUser usr in users)
+            foreach (User usr in Users)
             {
                 sb.Append(usr.Data() + "\r\n");
             }
@@ -279,7 +280,7 @@ namespace DGJv3
         public void UserLoad()
         {
             //清理旧数据//切歌不清理是因为没有必要
-            users.Clear();
+            Users.Clear();
             HaveUser.Clear();
             FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
             if (!SaveFile.Exists)
@@ -297,8 +298,8 @@ namespace DGJv3
                 {
                     continue;
                 }
-                users.Add(new DMJUser(rt));
-                HaveUser.Add(users[users.Count - 1].Uid);
+                Users.Add(new User(rt));
+                HaveUser.Add(Users[Users.Count - 1].Uid);
             }
         }
 
@@ -325,7 +326,7 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
         }
-
+       
         public event LogEvent LogEvent;
         private void Log(string message, Exception exception = null) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }

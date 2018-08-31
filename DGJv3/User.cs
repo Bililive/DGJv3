@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DGJv3
 {
-    class DMJUser//用户模块
+    class User//用户模块
     {
         private int uid;//用户id
         private int money = 0;//用户拥有的瓜子 //调整0可以修改为初始赠送多少点歌积分
@@ -27,7 +27,7 @@ namespace DGJv3
         //}
 
 
-        public DMJUser(string Loadinfo)//加载数据用
+        public User(string Loadinfo)//加载数据用
         {
             string[] tmps = Loadinfo.Split('|');
             try
@@ -43,11 +43,11 @@ namespace DGJv3
             }
         }
 
-        public DMJUser(int uid)
+        public User(int uid)
         {
             Uid = uid;
         }
-        public DMJUser(int uid,int money)
+        public User(int uid,int money)
         {
             Uid = uid;
             Money = money;
