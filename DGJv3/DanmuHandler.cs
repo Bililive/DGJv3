@@ -156,30 +156,7 @@ namespace DGJv3
                 case "点歌":
                 case "點歌":
                     {
-                        //判断是否开启积分点歌
-                        if (SetIsGiftPlay)
-                        {
-                            User usr = Users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
-                            if (usr == null)
-                            {
-                                Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}瓜子后开始点歌");
-                            }
-                            else if (usr.Money > SetGiftPlaySpend)
-                            {
-                                usr.Money -= SetGiftPlaySpend;
-                                //usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
-                                Log(danmakuModel.UserName + $":点歌成功 花费{SetGiftPlaySpend}点歌币 剩余{usr.Money}");
-                                DanmuAddSong(danmakuModel, rest);
-                            }
-                            else
-                            {
-                                Log(danmakuModel.UserName + $":点歌失败 点歌需要{SetGiftPlaySpend}点歌币 而您剩余{usr.Money}点歌币");
-                            }
-                        }
-                        else
-                        {
-                            DanmuAddSong(danmakuModel, rest);
-                        }
+                        DanmuAddSong(danmakuModel, rest);                      
                     }
                     return;
                 case "取消點歌":
@@ -239,6 +216,28 @@ namespace DGJv3
 
         private void DanmuAddSong(DanmakuModel danmakuModel, string keyword)
         {
+            //判断是否开启积分点歌 //送礼点歌集成到DanmuAddSong
+            if (SetIsGiftPlay)
+            {
+                User usr = Users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
+                if (usr == null)
+                {
+                    Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}瓜子后开始点歌");
+                    return;
+                }
+                else if (usr.Money > SetGiftPlaySpend)
+                {
+                    usr.Money -= SetGiftPlaySpend;
+                    //usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
+                    Log(danmakuModel.UserName + $":点歌成功 花费{SetGiftPlaySpend}点歌币 剩余{usr.Money}");
+                }
+                else
+                {
+                    Log(danmakuModel.UserName + $":点歌失败 点歌需要{SetGiftPlaySpend}点歌币 而您剩余{usr.Money}点歌币");
+                    return;
+                }
+            }
+            
             if (dispatcher.Invoke(callback: () => CanAddSong(username: danmakuModel.UserName)))
             {
                 SongInfo songInfo = null;
