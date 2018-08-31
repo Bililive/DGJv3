@@ -136,12 +136,12 @@ namespace DGJv3
                 {
                     usr = new DMJUser(danmakuModel.UserID);
                 }
-                if (!usr.Update)
-                {
-                    usr.VipLv = 1 + Convert.ToInt32(danmakuModel.isVIP) + (Convert.ToInt32(danmakuModel.isAdmin) + danmakuModel.UserGuardLevel) * 2;
-                    usr.Name = danmakuModel.UserName;
-                    usr.Update = true;
-                }
+                //if (!usr.Update)//关闭热更新
+                //{
+                //    usr.VipLv = 1 + Convert.ToInt32(danmakuModel.isVIP) + (Convert.ToInt32(danmakuModel.isAdmin) + danmakuModel.UserGuardLevel) * 2;
+                //    usr.Name = danmakuModel.UserName;
+                //    usr.Update = true;
+                //}
                 //然后添加金钱到用户
                 JObject staff = JObject.Parse(danmakuModel.RawData);
 
@@ -149,7 +149,7 @@ namespace DGJv3
                 usr.Money += gifmon * danmakuModel.GiftCount;//加钱             
 
                 //返回消息
-                Log($"感谢{usr.Name}支持的{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{gifmon * danmakuModel.GiftCount}点歌币");//这里暂时用log代替输出，后续等@队长改
+                Log($"感谢{danmakuModel.UserName}支持的{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{gifmon * danmakuModel.GiftCount}点歌币");//这里暂时用log代替输出，后续等@队长改
             }
 
             //判断是不是文本消息
@@ -212,17 +212,18 @@ namespace DGJv3
                             DMJUser usr = FindUser(danmakuModel.UserID);
                             if (usr == null)
                             {
-                                Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}金瓜子后开始点歌");
+                                Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}瓜子后开始点歌");
                             }
                             else if (usr.Money > SetGiftPlaySpend)
                             {
-                                usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
-                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
+                                usr.Money -= SetGiftPlaySpend;
+                                //usr.Money -= (int)(SetGiftPlaySpend * usr.Discount());
+                                Log(danmakuModel.UserName + $":点歌成功 花费{SetGiftPlaySpend}点歌币 剩余{usr.Money}");
                                 DanmuAddSong(danmakuModel, rest);
                             }
                             else
                             {
-                                Log(danmakuModel.UserName + $":点歌失败 点歌需要{(int)(SetGiftPlaySpend * usr.Discount())}点歌币 而您剩余{usr.Money}点歌币");
+                                Log(danmakuModel.UserName + $":点歌失败 点歌需要{SetGiftPlaySpend}点歌币 而您剩余{usr.Money}点歌币");
                             }
                         }
                         else
@@ -259,14 +260,14 @@ namespace DGJv3
                             }
                             else if (usr.Money > SetGiftPlaySpend)
                             {
-                                usr.Money -= (int)(SetGiftPlaySpend * usr.Discount() * 0.5);
-                                Log(danmakuModel.UserName + $":切歌投票成功 花费{(int)(SetGiftPlaySpend * usr.Discount() * 0.5)}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
+                                usr.Money -= SetGiftPlaySpend;
+                                Log(danmakuModel.UserName + $":切歌投票成功 花费{(int)(SetGiftPlaySpend  * 0.5)}点歌币 剩余{usr.Money}");
                                 NowChange += 1;
                                 QGUser.Add(danmakuModel.UserID);
                             }
                             else
                             {
-                                Log(danmakuModel.UserName + $":点歌成功 花费{(int)(SetGiftPlaySpend * usr.Discount())}点歌币({(int)(usr.Discount() * 10)}折) 剩余{usr.Money}");
+                                Log(danmakuModel.UserName + $":切歌投票失败 切歌需要{(int)(SetGiftPlaySpend * 0.5)}点歌币 而您剩余{usr.Money}点歌币");
                             }
                         }
                         else
