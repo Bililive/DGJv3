@@ -36,6 +36,8 @@ namespace DGJv3
         /// 每个人最多点歌数量
         /// </summary>
         public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
+        internal List<User> Users { get => users; set => users = value; }
+
         private uint _maxPersonSongNum;
 
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
@@ -54,7 +56,8 @@ namespace DGJv3
 
         //原本打算写进config里面，看了下感觉不合适，单独立了个存档
 
-        public List<User> Users = new List<User>();
+        private List<User> users = new List<User>();
+
         public bool SetIsGiftPlay = false;//用来判断设置是否进行礼物点歌
         public bool SetIsGiftQG = false;//用来判断设置是否进行礼物切歌
 
@@ -62,7 +65,6 @@ namespace DGJv3
         public int SetGiftQGSpend = 100; //如果通过礼物切歌，切一首个的价格(瓜子
         public int SetTPChangeMax = 20;//当满足这么多切歌人数时，进行切歌/可以自行设置
 
-        public List<int> HaveUser = new List<int>();//用来快速判断是否有这个用户
         public List<int> QGUser = new List<int>();//用来快速判断这个用户有没有投票切歌
 
         /// <summary>
@@ -91,13 +93,13 @@ namespace DGJv3
                 //    usr.Update = true;
                 //}
                 //然后添加金钱到用户
-                JObject staff = JObject.Parse(danmakuModel.RawData);
+                JObject raw_data_jobject = JObject.Parse(danmakuModel.RawData);
 
-                int gifmon = staff["data"]["price"].ToObject<int>();
-                usr.Money += gifmon * danmakuModel.GiftCount;//加钱             
+                int gift_price = raw_data_jobject?["data"]?["price"]?.ToObject<int>() ?? 0;
+                usr.Money += gift_price * danmakuModel.GiftCount;//加钱             
 
                 //返回消息
-                Log($"感谢{danmakuModel.UserName}支持的{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{gifmon * danmakuModel.GiftCount}点歌币");//这里暂时用log代替输出，后续等@队长改
+                Log($"感谢{danmakuModel.UserName}支持的{danmakuModel.GiftName}*{danmakuModel.GiftCount} 获得{gift_price * danmakuModel.GiftCount}点歌币");//这里暂时用log代替输出，后续等@队长改
             }
 
             //判断是不是文本消息
@@ -281,7 +283,6 @@ namespace DGJv3
         {
             //清理旧数据//切歌不清理是因为没有必要
             Users.Clear();
-            HaveUser.Clear();
             FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
             if (!SaveFile.Exists)
             {
@@ -299,7 +300,6 @@ namespace DGJv3
                     continue;
                 }
                 Users.Add(new User(rt));
-                HaveUser.Add(Users[Users.Count - 1].Uid);
             }
         }
 

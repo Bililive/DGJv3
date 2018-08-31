@@ -13,7 +13,6 @@ namespace DGJv3
 
         public int Uid { get => uid; set => uid = value; }
         public int Money { get => money; set => money = value; }
-
         //热更新数据:不会被保存,当用户出现的时候更新下数据//暂不热更新数据，暂不需要
 
         //public bool Update = false;//判断用户是否更新了个人数据
