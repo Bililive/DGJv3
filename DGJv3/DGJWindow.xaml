@@ -414,7 +414,7 @@
                             -->
                             <TextBox Text="{Binding Writer.ScribanTemplate,Delay=800,UpdateSourceTrigger=PropertyChanged}"
                                      TextAlignment="Left" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0"
-                                     Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="模板"
+                                     Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="模板   不会改请保持默认"
                                      TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>
                             <TextBox Text="{Binding Writer.Result}" IsEnabled="False" TextAlignment="Left"
                                      VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1"

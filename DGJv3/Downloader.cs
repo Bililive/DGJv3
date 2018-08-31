@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Threading;
 
 namespace DGJv3
@@ -24,6 +24,11 @@ namespace DGJv3
             IsEnabled = true,
         };
 
+        private Timer downloadTimeoutTimer = new Timer(1000)
+        {
+            AutoReset = true,
+        };
+
         public bool IsModuleDownloading { get => _isModuleDownloading; set => SetField(ref _isModuleDownloading, value); }
         private bool _isModuleDownloading = false;
 
@@ -38,13 +43,41 @@ namespace DGJv3
         private SongItem currentSong = null;
 
         private DateTime lastUpdateTime;
+
         private long lastUpdateDownloadedSize;
+
+        private DateTime lastHighspeedTime;
+
+        private TimeSpan timeout = TimeSpan.FromSeconds(5);
 
         public Downloader(ObservableCollection<SongItem> songs)
         {
             Songs = songs;
             newSongTimer.Tick += NewSongTimer_Tick;
+            downloadTimeoutTimer.Elapsed += DownloadTimeoutTimer_Elapsed;
             dispatcher = Dispatcher.CurrentDispatcher;
+
+            PropertyChanged += Downloader_PropertyChanged;
+        }
+
+        private void DownloadTimeoutTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (DownloadPercentage > 0 && (DateTime.Now - lastHighspeedTime > timeout))
+            {
+                Log("下载速度过慢，防卡下载自动取消");
+                CancelDownload();
+            }
+        }
+
+        private void Downloader_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DownloadSpeed))
+            {
+                if (DownloadSpeed > 80)
+                {
+                    lastHighspeedTime = DateTime.Now;
+                }
+            }
         }
 
         private void NewSongTimer_Tick(object sender, EventArgs e)
@@ -78,7 +111,7 @@ namespace DGJv3
             if (currentSong.Module.IsHandleDownlaod)
             {
                 IsModuleDownloading = true;
-                new Thread(() =>
+                new System.Threading.Thread(() =>
                 {
                     switch (currentSong.Module.SafeDownload(currentSong))
                     {
@@ -196,6 +229,6 @@ namespace DGJv3
         }
 
         public event LogEvent LogEvent;
-        private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
+        private void Log(string message, Exception exception = null) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
     }
 }

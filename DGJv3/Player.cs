@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace DGJv3
@@ -203,8 +204,7 @@ namespace DGJv3
                     if (index != currentLyricIndex)
                     {
                         currentLyricIndex = index;
-                        CurrentLyric = current;
-                        UpcomingLyric = upcoming;
+                        SetLyric(current, upcoming);
                     }
                 }
             }
@@ -294,14 +294,24 @@ namespace DGJv3
 
             currentSong = null;
 
-            CurrentLyric = string.Empty;
-            UpcomingLyric = string.Empty;
+            SetLyric(string.Empty, string.Empty);
 
             // TODO: PlayerBroadcasterLoop 功能
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+        }
+
+        private void SetLyric(string current, string upcoming)
+        {
+            CurrentLyric = current;
+            UpcomingLyric = upcoming;
+            Task.Run(() => LyricEvent?.Invoke(this, new LyricChangedEventArgs()
+            {
+                CurrentLyric = current,
+                UpcomingLyric = upcoming
+            }));
         }
 
         /// <summary>
@@ -375,6 +385,8 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
         }
+
+        public event LyricChangedEvent LyricEvent;
 
         public event LogEvent LogEvent;
         private void Log(string message, Exception exception) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });

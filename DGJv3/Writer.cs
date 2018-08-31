@@ -39,12 +39,23 @@ namespace DGJv3
 
             PropertyChanged += Writer_PropertyChanged;
 
+            Player.LyricEvent += Player_LyricEvent;
+
             timer = new Timer(1000)
             {
                 AutoReset = true
             };
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
+        }
+
+        private void Player_LyricEvent(object sender, LyricChangedEventArgs e)
+        {
+            try
+            {
+                File.WriteAllText(Utilities.LyricOutputFilePath, e.CurrentLyric + Environment.NewLine + e.UpcomingLyric);
+            }
+            catch (Exception) { }
         }
 
         private void Writer_PropertyChanged(object sender, PropertyChangedEventArgs e)
