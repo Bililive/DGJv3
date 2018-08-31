@@ -15,7 +15,7 @@ namespace DGJv3
 
         public bool Update = false;//判断用户是否更新了个人数据
         public string Name;
-        public int OrderMax = 0;//用户最大可以使用(点歌)命令条数(默认100/天)//清除方法:重启软件
+        //public int OrderMax = 0;//用户最大可以使用(点歌)命令条数(默认100/天)//清除方法:重启软件
         public int VipLv = 1;//用户vip等级越高，收益越多(打折播放歌曲等
 
         public double Discount()
