@@ -51,70 +51,16 @@ namespace DGJv3
 
 
 
-
-        /// <summary>
-        /// 定位用户
-        /// </summary>
-        /// <param name="Uid">用户id</param>
-        /// <returns></returns>
-        public DMJUser FindUser(int Uid)
-        {
-            if (!HaveUser.Contains(Uid))
-                return null;
-            foreach (DMJUser usr in users)
-            {
-                if (usr.Uid == Uid)
-                {
-                    return usr;
-                }
-            }
-            return null;
-        }
         //原本打算写进config里面，看了下感觉不合适，单独立了个存档
-        public void UserSave()
-        {
-            FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
-            FileStream fs = SaveFile.Create();
-            StringBuilder sb = new StringBuilder();
-            foreach (DMJUser usr in users)
-            {
-                sb.Append(usr.Data() + "\r\n");
-            }
-            byte[] wwrite = Encoding.UTF8.GetBytes(sb.ToString());
-            fs.Write(wwrite, 0, wwrite.Length);
-            fs.Close();
-        }
-        public void UserLoad()
-        {
-            //清理旧数据//切歌不清理是因为没有必要
-            users.Clear();
-            HaveUser.Clear();
-            FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
-            if (!SaveFile.Exists)
-            {
-                return;
-            }
-            FileStream fs = SaveFile.OpenRead();
-            byte[] buffer = new byte[fs.Length];
-            fs.Read(buffer, 0, Convert.ToInt32(fs.Length));
-            fs.Close();
-            string[] readth = Encoding.UTF8.GetString(buffer).Replace("\r", "").Trim('\n').Split('\n');           
-            foreach (string rt in readth)
-            {
-                if (rt == "")
-                {
-                    continue;
-                }
-                users.Add(new DMJUser(rt));
-                HaveUser.Add(users[users.Count - 1].Uid);
-            }
-        }
 
         public List<DMJUser> users = new List<DMJUser>();
-        public bool SetIsGiftPlay = false;//用来判断设置是否进行弹幕点歌
+        public bool SetIsGiftPlay = false;//用来判断设置是否进行礼物点歌
+        public bool SetIsGiftQG = false;//用来判断设置是否进行礼物切歌
+
         public int SetGiftPlaySpend = 100; //如果通过礼物点歌，点一首个的价格(瓜子
+        public int SetGiftQGSpend = 100; //如果通过礼物切歌，切一首个的价格(瓜子
         public int SetTPChangeMax = 20;//当满足这么多切歌人数时，进行切歌/可以自行设置
-        public int NowChange = 0;//现在想要切歌的人数//同理这是{切歌当前票数}
+
         public List<int> HaveUser = new List<int>();//用来快速判断是否有这个用户
         public List<int> QGUser = new List<int>();//用来快速判断这个用户有没有投票切歌
 
@@ -131,7 +77,8 @@ namespace DGJv3
             if (danmakuModel.MsgType == MsgTypeEnum.GiftSend)
             {
                 //首先找有没有用户，没有自动创建
-                DMJUser usr = FindUser(danmakuModel.UserID);
+                DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
+
                 if (usr == null)//没有自动创建
                 {
                     usr = new DMJUser(danmakuModel.UserID);
@@ -209,7 +156,7 @@ namespace DGJv3
                         //判断是否开启积分点歌
                         if (SetIsGiftPlay)
                         {
-                            DMJUser usr = FindUser(danmakuModel.UserID);
+                            DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
                             if (usr == null)
                             {
                                 Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}瓜子后开始点歌");
@@ -253,7 +200,7 @@ namespace DGJv3
                         }
                         if (SetIsGiftPlay)
                         {
-                            DMJUser usr = FindUser(danmakuModel.UserID);
+                            DMJUser usr = users.FirstOrDefault(x => x.Uid == danmakuModel.UserID);
                             if (usr == null)
                             {
                                 Log(danmakuModel.UserName + $":请先打赏{SetGiftPlaySpend}金瓜子后投票切歌");
@@ -261,8 +208,7 @@ namespace DGJv3
                             else if (usr.Money > SetGiftPlaySpend)
                             {
                                 usr.Money -= SetGiftPlaySpend;
-                                Log(danmakuModel.UserName + $":切歌投票成功 花费{(int)(SetGiftPlaySpend  * 0.5)}点歌币 剩余{usr.Money}");
-                                NowChange += 1;
+                                Log(danmakuModel.UserName + $":切歌投票成功 花费{(int)(SetGiftPlaySpend * 0.5)}点歌币 剩余{usr.Money}");
                                 QGUser.Add(danmakuModel.UserID);
                             }
                             else
@@ -273,12 +219,10 @@ namespace DGJv3
                         else
                         {
                             QGUser.Add(danmakuModel.UserID);//记录防止重复投票
-                            NowChange += 1;
                         }
 
-                        if (NowChange >= SetTPChangeMax)//如果满足切歌+清空
+                        if (QGUser.Count() >= SetTPChangeMax)//如果满足切歌+清空
                         {
-                            NowChange = 0;
                             QGUser.Clear();
                             Player.Next();
                         }
@@ -317,6 +261,44 @@ namespace DGJv3
                     if (CanAddSong(danmakuModel.UserName))
                         Songs.Add(new SongItem(songInfo, danmakuModel.UserName));
                 });
+            }
+        }
+        public void UserSave()
+        {
+            FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
+            FileStream fs = SaveFile.Create();
+            StringBuilder sb = new StringBuilder();
+            foreach (DMJUser usr in users)
+            {
+                sb.Append(usr.Data() + "\r\n");
+            }
+            byte[] wwrite = Encoding.UTF8.GetBytes(sb.ToString());
+            fs.Write(wwrite, 0, wwrite.Length);
+            fs.Close();
+        }
+        public void UserLoad()
+        {
+            //清理旧数据//切歌不清理是因为没有必要
+            users.Clear();
+            HaveUser.Clear();
+            FileInfo SaveFile = new FileInfo(Utilities.ConfigFilePath + @"\userinfo.dgj");
+            if (!SaveFile.Exists)
+            {
+                return;
+            }
+            FileStream fs = SaveFile.OpenRead();
+            byte[] buffer = new byte[fs.Length];
+            fs.Read(buffer, 0, Convert.ToInt32(fs.Length));
+            fs.Close();
+            string[] readth = Encoding.UTF8.GetString(buffer).Replace("\r", "").Trim('\n').Split('\n');
+            foreach (string rt in readth)
+            {
+                if (rt == "")
+                {
+                    continue;
+                }
+                users.Add(new DMJUser(rt));
+                HaveUser.Add(users[users.Count - 1].Uid);
             }
         }
 
