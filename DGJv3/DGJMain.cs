@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace DGJv3
 {
@@ -10,12 +11,14 @@ namespace DGJv3
     {
         private DGJWindow window;
 
+        private VersionChecker versionChecker;
+
         public DGJMain()
         {
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
 
             this.PluginName = "点歌姬";
-            this.PluginVer = "3.0-alpha";
+            this.PluginVer = StaticInfo.PluginVersionString;
             this.PluginDesc = "使用弹幕点播歌曲";
             this.PluginAuth = "Genteure";
             this.PluginCont = "dgj3@genteure.com";
@@ -26,6 +29,24 @@ namespace DGJv3
             }
             catch (Exception) { }
             window = new DGJWindow(this);
+            versionChecker = new VersionChecker("DGJv3");
+            Task.Run(() =>
+            {
+                if (versionChecker.FetchInfo())
+                {
+                    if (versionChecker.HasNewVersion(StaticInfo.PluginVersion))
+                    {
+                        Log("插件有新版本" + Environment.NewLine +
+                            $"当前版本：{StaticInfo.PluginVersionString}({StaticInfo.PluginVersion.ToString()})" + Environment.NewLine +
+                            $"最新版本：{versionChecker.Version.ToString()} 更新时间：{versionChecker.UpdateDateTime.ToShortDateString()}" + Environment.NewLine +
+                            versionChecker.UpdateDescription);
+                    }
+                }
+                else
+                {
+                    Log("版本检查出错：" + versionChecker?.LastException?.Message);
+                }
+            });
         }
 
         public override void Admin()

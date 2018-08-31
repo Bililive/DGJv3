@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,8 +35,7 @@
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
     <DllExportNamespace>System.Runtime.InteropServices</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>
-    <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
     <DllExportGenExpLib>false</DllExportGenExpLib>
     <DllExportOurILAsm>false</DllExportOurILAsm>
@@ -123,8 +121,10 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="SongStatus.cs" />
     <Compile Include="SongStatusStringConverter.cs" />
+    <Compile Include="StaticInfo.cs" />
     <Compile Include="UniversalCommand.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="VersionChecker.cs" />
     <Compile Include="WaveoutEventDeviceInfo.cs" />
     <Compile Include="Writer.cs" />
   </ItemGroup>

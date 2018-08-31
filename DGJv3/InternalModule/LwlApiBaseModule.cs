@@ -69,8 +69,8 @@ namespace DGJv3.InternalModule
                 {
                     List<JToken> result = (playlist["result"] as JArray).ToList();
 
-                    if (result.Count() > 30)
-                        result = result.Take(30).ToList();
+                    if (result.Count() > 50)
+                        result = result.Take(50).ToList();
 
                     result.ForEach(song =>
                     {
@@ -194,7 +194,7 @@ namespace DGJv3.InternalModule
 
             request.Timeout = 10000;
             request.Host = host;
-            request.UserAgent = "DMPlugin_DGJ/3.0-alpha";
+            request.UserAgent = "DMPlugin_DGJ/" + StaticInfo.PluginVersionString;
 
             if (referer != null)
                 request.Referer = referer;

@@ -159,7 +159,11 @@ namespace DGJv3
 
                 dispatcher.Invoke(callback: () =>
                 {
-                    if (CanAddSong(danmakuModel.UserName))
+                    if (CanAddSong(danmakuModel.UserName) &&
+                        !Songs.Any(x =>
+                            x.SongId == songInfo.Id &&
+                            x.Module.UniqueId == songInfo.Module.UniqueId)
+                    )
                         Songs.Add(new SongItem(songInfo, danmakuModel.UserName));
                 });
             }

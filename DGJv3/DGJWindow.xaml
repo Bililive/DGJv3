@@ -175,7 +175,11 @@
                         materialDesign:DialogHost.DialogClosingAttached="DialogAddPlaylist">
                         <Button.CommandParameter>
                             <StackPanel Margin="16">
-                                <TextBlock FontSize="16">歌单ID</TextBlock>
+                                <TextBlock FontSize="16">
+                                    歌单ID  注：大歌单会卡顿一段时间
+                                    <LineBreak/>
+                                    只会加载歌单的前 50 首歌
+                                </TextBlock>
                                 <TextBox x:Name="AddPlaylistTextBox"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
@@ -413,7 +417,7 @@
                             <TextBlock Grid.ColumnSpan="2">文本输出设置</TextBlock>
                             -->
                             <TextBox Text="{Binding Writer.ScribanTemplate,Delay=800,UpdateSourceTrigger=PropertyChanged}"
-                                     TextAlignment="Left" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0"
+                                     TextAlignment="Left" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0" ContextMenu="{x:Null}"
                                      Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="模板   不会改请保持默认"
                                      TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>
                             <TextBox Text="{Binding Writer.Result}" IsEnabled="False" TextAlignment="Left"
