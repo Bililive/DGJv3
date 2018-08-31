@@ -68,7 +68,16 @@ namespace DGJv3
                 {
                     case "切歌":
                         {
-                            Player.Next();
+                            // Player.Next();
+
+                            dispatcher.Invoke(() =>
+                            {
+                                if (Songs.Count > 0)
+                                {
+                                    Songs[0].Remove(Songs, Downloader, Player);
+                                }
+                            });
+
                             /*
                             if (commands.Length >= 2)
                             {
