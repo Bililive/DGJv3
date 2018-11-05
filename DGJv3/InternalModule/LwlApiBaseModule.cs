@@ -62,17 +62,23 @@ namespace DGJv3.InternalModule
             try
             {
                 JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.SongId}"));
-                if (lobj["result"]["lwlyric"] != null)
+                if (lobj["result"] is JObject)
+                    lobj = (JObject) lobj["result"];
+                else
                 {
-                    return lobj["result"]["lwlyric"].ToString();
+                    lobj = JObject.Parse(lobj["result"].Value<string>());
                 }
-                else if (lobj["result"]["tlyric"] != null)
+                if (lobj["lwlyric"] != null)
                 {
-                    return lobj["result"]["tlyric"].ToString();
+                    return lobj["lwlyric"].ToString();
                 }
-                else if (lobj["result"]["lyric"] != null)
+                else if (lobj["tlyric"] != null)
                 {
-                    return lobj["result"]["lyric"].ToString();
+                    return lobj["tlyric"].ToString();
+                }
+                else if (lobj["lyric"] != null)
+                {
+                    return lobj["lyric"].ToString();
                 }
                 else
                 { Log("歌词获取错误(id:" + songInfo.SongId + ")"); }
@@ -176,17 +182,23 @@ namespace DGJv3.InternalModule
             try
             {
                 JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
-                if (lobj["result"]["lwlyric"] != null)
+                if (lobj["result"] is JObject)
+                    lobj = (JObject)lobj["result"];
+                else
                 {
-                    songInfo.Lyric = lobj["result"]["lwlyric"].ToString();
+                    lobj = JObject.Parse(lobj["result"].Value<string>());
                 }
-                else if (lobj["result"]["tlyric"] != null)
+                if (lobj["lwlyric"] != null)
                 {
-                    songInfo.Lyric = lobj["result"]["tlyric"].ToString();
+                    songInfo.Lyric = lobj["lwlyric"].ToString();
                 }
-                else if (lobj["result"]["lyric"] != null)
+                else if (lobj["tlyric"] != null)
                 {
-                    songInfo.Lyric = lobj["result"]["lyric"].ToString();
+                    songInfo.Lyric = lobj["tlyric"].ToString();
+                }
+                else if (lobj["lyric"] != null)
+                {
+                    songInfo.Lyric = lobj["lyric"].ToString();
                 }
                 else
                 { Log("歌词获取错误(id:" + songInfo.Id + ")"); }
