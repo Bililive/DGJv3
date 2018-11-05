@@ -222,7 +222,7 @@ namespace DGJv3
                 LoadSong(Songs[0]);
             }
 
-            if (Songs.Count == 0 && IsPlaylistEnabled && Playlist.Count > 0)
+            if (Songs.Count < 2 && IsPlaylistEnabled && Playlist.Count > 0)
             {
                 int index = -1;
                 int time = 0;

@@ -18,6 +18,10 @@ namespace DGJv3
         public string[] Singers { get; set; }
         [JsonIgnore]
         public string SingersText { get => string.Join(";", Singers); }
+
+        /// <summary>
+        /// Lyric存储的是这个歌曲的歌词文件，为null时，会认为是延迟获取，在下载歌曲时再通过接口尝试获取lrc
+        /// </summary>
         [JsonProperty("lrc")]
         public string Lyric { get; set; }
         [JsonProperty("note")]
