@@ -62,7 +62,11 @@ namespace DGJv3.InternalModule
             try
             {
                 JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.SongId}"));
-                if (lobj["result"]["tlyric"] != null)
+                if (lobj["result"]["lwlyric"] != null)
+                {
+                    return lobj["result"]["lwlyric"].ToString();
+                }
+                else if (lobj["result"]["tlyric"] != null)
                 {
                     return lobj["result"]["tlyric"].ToString();
                 }
@@ -172,7 +176,11 @@ namespace DGJv3.InternalModule
             try
             {
                 JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
-                if (lobj["result"]["tlyric"] != null)
+                if (lobj["result"]["lwlyric"] != null)
+                {
+                    songInfo.Lyric = lobj["result"]["lwlyric"].ToString();
+                }
+                else if (lobj["result"]["tlyric"] != null)
                 {
                     songInfo.Lyric = lobj["result"]["tlyric"].ToString();
                 }
