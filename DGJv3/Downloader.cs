@@ -188,7 +188,7 @@ namespace DGJv3
                 if (currentSong.Lyric == null)
                 {
                     var lyric = currentSong.Module.SafeGetLyric(currentSong);
-                    currentSong.Lyric = Lrc.InitLrc(lyric??"");
+                    currentSong.Lyric = Lrc.InitLrc(lyric ?? "");
                 }
                 currentSong.Status = SongStatus.WaitingPlay;
             }
