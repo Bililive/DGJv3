@@ -19,6 +19,11 @@ namespace DGJv3
             return null;
         }
 
+        protected override string GetLyric(SongItem songInfo)
+        {
+            return null;
+        }
+
         protected override List<SongInfo> GetPlaylist(string keyword)
         {
             return null;

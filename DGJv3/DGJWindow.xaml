@@ -176,9 +176,8 @@
                         <Button.CommandParameter>
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">
-                                    歌单ID  注：大歌单会卡顿一段时间
+                                    歌单ID(在你网页浏览你的歌单时，可以在网址栏看到一长串数字，那就是歌单ID啦）
                                     <LineBreak/>
-                                    只会加载歌单的前 50 首歌
                                 </TextBlock>
                                 <TextBox x:Name="AddPlaylistTextBox"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

@@ -158,6 +158,21 @@ namespace DGJv3
             }
         }
 
+        protected abstract string GetLyric(SongItem songInfo);
+
+        internal string SafeGetLyric(SongItem songInfo)
+        {
+            try
+            {
+                return GetLyric(songInfo);
+            }
+            catch (Exception ex)
+            {
+                WriteError(ex, "SongId: " + songInfo.SongId);
+                return null;
+            }
+        }
+
         /// <summary>
         /// 主插件调用用
         /// </summary>

@@ -17,7 +17,7 @@ namespace DGJv3
             SongId = songInfo.Id;
             SongName = songInfo.Name;
             Singers = songInfo.Singers;
-            Lyric = Lrc.InitLrc(songInfo.Lyric);
+            Lyric = (songInfo.Lyric == null) ? null : Lrc.InitLrc(songInfo.Lyric);
             Note = songInfo.Note;
 
         }

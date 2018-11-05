@@ -57,6 +57,29 @@ namespace DGJv3.InternalModule
             }
         }
 
+        protected override string GetLyric(SongItem songInfo)
+        {
+            try
+            {
+                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.SongId}"));
+                if (lobj["result"]["tlyric"] != null)
+                {
+                    return lobj["result"]["tlyric"].ToString();
+                }
+                else if (lobj["result"]["lyric"] != null)
+                {
+                    return lobj["result"]["lyric"].ToString();
+                }
+                else
+                { Log("歌词获取错误(id:" + songInfo.SongId + ")"); }
+
+            }
+            catch (Exception ex)
+            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + songInfo.SongId + ")"); }
+            
+            return null;
+        }
+
         protected override List<SongInfo> GetPlaylist(string keyword)
         {
             try
@@ -69,8 +92,8 @@ namespace DGJv3.InternalModule
                 {
                     List<JToken> result = (playlist["result"] as JArray).ToList();
 
-                    if (result.Count() > 50)
-                        result = result.Take(50).ToList();
+                    //if (result.Count() > 50)
+                    //    result = result.Take(50).ToList();
 
                     result.ForEach(song =>
                     {
@@ -81,22 +104,7 @@ namespace DGJv3.InternalModule
                                 song["name"].ToString(),
                                 (song["artist"] as JArray).Select(x => x.ToString()).ToArray());
 
-                            try
-                            {
-                                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
-                                if (lobj["result"]["lwlyric"] != null)
-                                {
-                                    songInfo.Lyric = lobj["result"]["lwlyric"].ToString();
-                                }
-                                else if (lobj["result"]["lyric"] != null)
-                                {
-                                    songInfo.Lyric = lobj["result"]["lyric"].ToString();
-                                }
-                                else
-                                { Log("歌词获取错误(id:" + songInfo.Id + ")"); }
-                            }
-                            catch (Exception ex)
-                            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + songInfo.Id + ")"); }
+                            songInfo.Lyric = null;//在之后再获取Lyric
 
                             songInfos.Add(songInfo);
                         }
@@ -164,9 +172,9 @@ namespace DGJv3.InternalModule
             try
             {
                 JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
-                if (lobj["result"]["lwlyric"] != null)
+                if (lobj["result"]["tlyric"] != null)
                 {
-                    songInfo.Lyric = lobj["result"]["lwlyric"].ToString();
+                    songInfo.Lyric = lobj["result"]["tlyric"].ToString();
                 }
                 else if (lobj["result"]["lyric"] != null)
                 {
