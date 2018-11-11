@@ -42,7 +42,13 @@ namespace DGJv3.InternalModule
 
                 if (dlurlobj["code"].ToString() == "200")
                 {
-                    return dlurlobj["result"]["url"].ToString();
+                    if (dlurlobj["result"] is JObject)
+                        dlurlobj = (JObject)dlurlobj["result"];
+                    else
+                    {
+                        dlurlobj = JObject.Parse(dlurlobj["result"].Value<string>());
+                    }
+                    return dlurlobj["url"].ToString();
                 }
                 else
                 {
