@@ -56,6 +56,12 @@ namespace DGJv3
         private int _waveoutEventDevice;
 
         /// <summary>
+        /// 用户点歌优先
+        /// </summary>
+        public bool IsUserPrior { get => _isUserPrior; set => SetField(ref _isUserPrior, value); }
+        private bool _isUserPrior = false;
+
+        /// <summary>
         /// 当前播放时间
         /// </summary>
         public TimeSpan CurrentTime
@@ -221,6 +227,19 @@ namespace DGJv3
             {
                 LoadSong(Songs[0]);
             }
+            else if (Songs.Count > 1
+                     && currentSong != null
+                     && currentSong.UserName == Utilities.SparePlaylistUser
+                     && Songs.FirstOrDefault(
+                         s => s.UserName != Utilities.SparePlaylistUser)?.Status == SongStatus.WaitingPlay)
+            {
+                Next();
+                var pendingRemove = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToList();
+                foreach (var songItem in pendingRemove)
+                {
+                    Songs.Remove(songItem);
+                }
+            }
 
             if (Songs.Count < 2 && IsPlaylistEnabled && Playlist.Count > 0)
             {
@@ -232,7 +251,7 @@ namespace DGJv3
                     time++;
                 } while (index == lastPlaylistIndex && time < 3);
 
-                Songs.Add(new SongItem(Playlist[index], "空闲歌单")); // TODO: 点歌人名字
+                Songs.Add(new SongItem(Playlist[index], Utilities.SparePlaylistUser)); 
             }
         }
 

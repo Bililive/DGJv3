@@ -37,6 +37,9 @@ namespace DGJv3
         [JsonProperty("dmps")]
         public uint MaxPersonSongNum { get; set; } = 2;
 
+        [JsonProperty("up")]
+        public bool IsUserPrior { get; set; } = true;
+
         [JsonProperty("plst")]
         public SongInfo[] Playlist { get; set; } = new SongInfo[0];
 
