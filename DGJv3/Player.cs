@@ -231,7 +231,8 @@ namespace DGJv3
                      && currentSong != null
                      && currentSong.UserName == Utilities.SparePlaylistUser
                      && Songs.FirstOrDefault(
-                         s => s.UserName != Utilities.SparePlaylistUser)?.Status == SongStatus.WaitingPlay)
+                         s => s.UserName != Utilities.SparePlaylistUser)?.Status == SongStatus.WaitingPlay
+                     && IsUserPrior)
             {
                 Next();
                 var pendingRemove = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToList();
