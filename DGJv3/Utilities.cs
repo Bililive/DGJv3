@@ -46,5 +46,7 @@ namespace DGJv3
 
         internal static readonly string LyricOutputFilePath = Path.Combine(DataDirectoryPath, "歌词.txt");
 
+        internal static readonly string SparePlaylistUser = "空闲歌单";
+
     }
 }

@@ -304,6 +304,10 @@
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Player.IsPlaylistEnabled}"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">没有点歌时从列表随机播放</TextBlock>
                                 </StackPanel>
+                                <StackPanel Margin="5" Orientation="Horizontal">
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Player.IsUserPrior}"/>
+                                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">用户点歌优先于空闲歌单播放</TextBlock>
+                                </StackPanel>
                                 <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                          materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"

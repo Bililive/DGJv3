@@ -146,6 +146,7 @@ namespace DGJv3
             Player.DirectSoundDevice = config.DirectSoundDevice;
             Player.WaveoutEventDevice = config.WaveoutEventDevice;
             Player.Volume = config.Volume;
+            Player.IsUserPrior = config.IsUserPrior;
             Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
             SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
             SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
@@ -175,6 +176,7 @@ namespace DGJv3
             PlayerType = Player.PlayerType,
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
+            IsUserPrior = Player.IsUserPrior,
             Volume = Player.Volume,
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
             PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
