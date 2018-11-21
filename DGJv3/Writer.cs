@@ -118,6 +118,18 @@ namespace DGJv3
                 }
                 catch (Exception) { }
             }
+            else
+            {
+                if (template?.HasErrors == true)
+                {
+                    try
+                    {
+                        Result = "模板有错误" + Environment.NewLine + string.Join(Environment.NewLine, template.Messages);
+                        File.WriteAllText(Utilities.ScribanOutputFilePath, Result);
+                    }
+                    catch (Exception) { }
+                }
+            }
         }
 
         public event LogEvent LogEvent;
