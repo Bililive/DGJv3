@@ -228,7 +228,7 @@ namespace DGJv3.InternalModule
 
             request.Timeout = 10000;
             request.Host = host;
-            request.UserAgent = "DMPlugin_DGJ/" + StaticInfo.PluginVersionString;
+            request.UserAgent = "DMPlugin_DGJ/" + BuildInfo.Version;
 
             if (referer != null)
                 request.Referer = referer;
