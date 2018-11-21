@@ -5,7 +5,7 @@ skip_tags: true
 
 assembly_info:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: 'DGJv3\Properties\AssemblyInfo.cs'
   assembly_version: $(APPVEYOR_BUILD_VERSION)
   assembly_file_version: $(APPVEYOR_BUILD_VERSION)
   assembly_informational_version: $(APPVEYOR_BUILD_VERSION)
@@ -35,9 +35,18 @@ for:
   configuration: Release
   before_deploy: # wont run on pull request
     - ps: ./CI/appveyor_deploy.ps1
+  deploy: # wont run on pull request
+    provider: GitHub
+    release: v$(APPVEYOR_BUILD_VERSION)
+    description: "# 点歌姬 $(APPVEYOR_BUILD_VERSION)\n\nCI 自动发布"
+    auth_token:
+      secure: 3n2WMbrqWb0nmy2LBmu7w6dJltiHHC4LCoNuIKBh7fKV0xfxCwVGOxbTpunLI2pe
+    artifact: DGJv3.dll
   artifacts:
     - path: DGJv3\bin\Release
       name: DGJv3ReleaseBuild
+    - path: DGJv3\bin\Release\x64\DGJv3.dll
+      name: DGJv3.dll
 -
   configuration: Debug
   artifacts:
