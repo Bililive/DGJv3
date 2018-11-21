@@ -93,6 +93,7 @@
     <Compile Include="BlackListItem.cs" />
     <Compile Include="BlackListType.cs" />
     <Compile Include="BlackListTypeStringConverter.cs" />
+    <Compile Include="BuildInfo.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="DanmuHandler.cs" />
     <Compile Include="DGJMain.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="SongStatus.cs" />
     <Compile Include="SongStatusStringConverter.cs" />
-    <Compile Include="StaticInfo.cs" />
     <Compile Include="UniversalCommand.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="VersionChecker.cs" />
@@ -142,6 +142,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BuildInfo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
@@ -161,4 +164,8 @@
   <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
     <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>cd $(SolutionDir)
+PowerShell -ExecutionPolicy Bypass -File .\CI\patch_buildinfo.ps1</PreBuildEvent>
+  </PropertyGroup>
 </Project>

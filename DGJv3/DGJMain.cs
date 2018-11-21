@@ -18,7 +18,7 @@ namespace DGJv3
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
 
             this.PluginName = "点歌姬";
-            this.PluginVer = StaticInfo.PluginVersionString;
+            this.PluginVer = BuildInfo.Version;
             this.PluginDesc = "使用弹幕点播歌曲";
             this.PluginAuth = "Genteure";
             this.PluginCont = "dgj3@genteure.com";
@@ -34,10 +34,12 @@ namespace DGJv3
             {
                 if (versionChecker.FetchInfo())
                 {
-                    if (versionChecker.HasNewVersion(StaticInfo.PluginVersion))
+                    Version current = Assembly.GetEntryAssembly().GetName().Version;
+
+                    if (versionChecker.HasNewVersion(current))
                     {
                         Log("插件有新版本" + Environment.NewLine +
-                            $"当前版本：{StaticInfo.PluginVersionString}({StaticInfo.PluginVersion.ToString()})" + Environment.NewLine +
+                            $"当前版本：{BuildInfo.Version}" + Environment.NewLine +
                             $"最新版本：{versionChecker.Version.ToString()} 更新时间：{versionChecker.UpdateDateTime.ToShortDateString()}" + Environment.NewLine +
                             versionChecker.UpdateDescription);
                     }
