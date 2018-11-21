@@ -75,6 +75,7 @@ namespace DGJv3
                                 if (Songs.Count > 0)
                                 {
                                     Songs[0].Remove(Songs, Downloader, Player);
+                                    Log("切歌成功！");
                                 }
                             });
 
@@ -162,10 +163,10 @@ namespace DGJv3
 
                 if (songInfo.IsInBlacklist(Blacklist))
                 {
-                    Log($"歌曲 {songInfo.Name} 在黑名单中");
+                    Log($"歌曲{songInfo.Name}在黑名单中");
                     return;
                 }
-
+                Log($"点歌成功:{songInfo.Name}");
                 dispatcher.Invoke(callback: () =>
                 {
                     if (CanAddSong(danmakuModel.UserName) &&
