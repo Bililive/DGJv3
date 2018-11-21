@@ -48,6 +48,11 @@
       <HintPath>.\BilibiliDM_PluginFramework.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="LoginCenter, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\LoginCenter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
       <HintPath>$(SolutionDir)packages\DllExport.1.6.1\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
       <Private>False</Private>

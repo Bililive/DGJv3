@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -53,6 +54,25 @@ namespace DGJv3
 
         public UniversalCommand ClearBlacklistCommand { get; set; }
 
+        public bool IsLogRedirectDanmaku { get; set; }
+
+        private bool isLoginCenterAuthed = false;
+
+        public void Log(string text)
+        {
+            PluginMain.Log(text);
+            if (IsLogRedirectDanmaku && isLoginCenterAuthed && PluginMain.RoomId.HasValue)
+            {
+                if (text.Length > 29)
+                    text = text.Substring(0, Math.Min(text.Length - 1, 29));
+                var result = Extensions.Send(PluginMain.RoomId.Value, text);
+                if (result == null)
+                {
+                    PluginMain.Log("弹幕发送失败！");
+                }
+            }
+        }
+
         public DGJWindow(DGJMain dGJMain)
         {
             DataContext = this;
@@ -67,11 +87,11 @@ namespace DGJv3
             DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
             Writer = new Writer(Songs, Playlist, Player, DanmuHandler);
 
-            Player.LogEvent += (sender, e) => { PluginMain.Log("播放 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Downloader.LogEvent += (sender, e) => { PluginMain.Log("下载 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Writer.LogEvent += (sender, e) => { PluginMain.Log("文本输出 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            SearchModules.LogEvent += (sender, e) => { PluginMain.Log("搜索模块 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            DanmuHandler.LogEvent += (sender, e) => { PluginMain.Log("弹幕 " + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Player.LogEvent += (sender, e) => { Log("播放:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Downloader.LogEvent += (sender, e) => { Log("下载:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Writer.LogEvent += (sender, e) => { Log("文本:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            DanmuHandler.LogEvent += (sender, e) => { Log("" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
 
             RemoveSongCommmand = new UniversalCommand((songobj) =>
             {
@@ -153,7 +173,11 @@ namespace DGJv3
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
-
+            IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
+            if (Extensions.CheckAuth(PluginMain))
+            {
+                isLoginCenterAuthed = true;
+            }
             Playlist.Clear();
             foreach (var item in config.Playlist)
             {
@@ -186,6 +210,7 @@ namespace DGJv3
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
+            IsLogRedirectDanmaku = IsLogRedirectDanmaku
         };
 
         /// <summary>
@@ -322,6 +347,33 @@ namespace DGJv3
         {
             e.Cancel = true;
             Hide();
+        }
+
+        private async void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var toggleBtn = (ToggleButton) sender;
+            if (Extensions.CheckLoginCenter() == false)
+            {
+                Log("需要安装 登录中心 以使用此功能");
+                toggleBtn.IsChecked = false;
+                return;
+            }
+            var result = await Extensions.DoAuth(PluginMain);
+            if (Extensions.CheckAuth(PluginMain))
+            {
+                Log("授权成功");
+                isLoginCenterAuthed = true;
+            }
+            else
+            {
+                Log("授权失败");
+                isLoginCenterAuthed = false;
+            }
+
+            if (!isLoginCenterAuthed)
+            {
+                toggleBtn.IsChecked = false;
+            }
         }
     }
 }
