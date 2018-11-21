@@ -1,4 +1,5 @@
-throw "to be done"
+7z a 'DGJv3.7z' "$env:PAPPVEYOR_BUILD_FOLDER\DGJv3\bin\Release\x64\DGJ.dll"
+Move-Item -Path 'DGJv3.7z' -Destination "$env:DEPLOY_SITE_GIT\resource\DGJv3\DGJv3.7z"
 
 git --git-dir="$env:DEPLOY_SITE_GIT\.git\" --work-tree="$env:DEPLOY_SITE_GIT" add -A
 git --git-dir="$env:DEPLOY_SITE_GIT\.git\" --work-tree="$env:DEPLOY_SITE_GIT" commit --quiet -m "DGJv3 $env:APPVEYOR_BUILD_VERSION"
@@ -12,7 +13,7 @@ $headers = @{
 $body = @{
     'title'                 = "[CI] DGJv3 $env:APPVEYOR_BUILD_VERSION"
     'head'                  = "$env:DEPLOY_SITE_BRANCH"
-    'body'                  = "Update file for DGJv3 $env:APPVEYOR_BUILD_VERSION"
+    'body'                  = "Update file for DGJv3 $env:APPVEYOR_BUILD_VERSION\n别忘了修改 ``plugin_version`` 和 ``plugin_update_datetime``"
     'base'                  = 'master'
     'maintainer_can_modify' = $true
 } | ConvertTo-Json
