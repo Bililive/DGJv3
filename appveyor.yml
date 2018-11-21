@@ -1,0 +1,48 @@
+image: Visual Studio 2017
+version: 0.0.0.{build}
+platform: Any CPU
+skip_tags: true
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: $(APPVEYOR_BUILD_VERSION)
+  assembly_file_version: $(APPVEYOR_BUILD_VERSION)
+  assembly_informational_version: $(APPVEYOR_BUILD_VERSION)
+
+environment:
+  github_access_token:
+    secure: 3n2WMbrqWb0nmy2LBmu7w6dJltiHHC4LCoNuIKBh7fKV0xfxCwVGOxbTpunLI2pe
+
+cache:
+  - packages
+
+install:
+  - ps: ./CI/appveyor_install.ps1
+
+before_build:
+  - nuget restore -Verbosity quiet
+  - msbuild /nologo /v:q /t:Clean
+
+build_script:
+  - ps: msbuild /nologo /v:q /p:Configuration="$env:CONFIGURATION" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+for:
+-
+  branches:
+    only:
+      - master # including pull requests target at master
+  configuration: Release
+  before_deploy: # wont run on pull request
+    - ps: ./CI/appveyor_deploy.ps1
+  artifacts:
+    - path: DGJv3\bin\Release
+      name: DGJv3ReleaseBuild
+-
+  configuration: Debug
+  artifacts:
+    - path: DGJv3\bin\Debug
+      name: DGJv3DebugBuild
+
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
