@@ -9,19 +9,25 @@ namespace DGJv3
 {
     public class DGJMain : DMPlugin
     {
-        private DGJWindow window;
+        private readonly DGJWindow window;
 
         private VersionChecker versionChecker;
 
         public DGJMain()
         {
+            try
+            {
+                var info = Directory.CreateDirectory(Utilities.BinDirectoryPath);
+                info.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            }
+            catch (Exception) { }
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
 
-            this.PluginName = "点歌姬";
-            this.PluginVer = BuildInfo.Version;
-            this.PluginDesc = "使用弹幕点播歌曲";
-            this.PluginAuth = "Genteure";
-            this.PluginCont = "dgj3@genteure.com";
+            PluginName = "点歌姬";
+            PluginVer = BuildInfo.Version;
+            PluginDesc = "使用弹幕点播歌曲";
+            PluginAuth = "Genteure";
+            PluginCont = "dgj3@genteure.com";
 
             try
             {
@@ -59,23 +65,31 @@ namespace DGJv3
 
         public override void DeInit() => window.DeInit();
 
-
         private static Assembly OnResolveAssembly(object sender, ResolveEventArgs args)
         {
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
             AssemblyName assemblyName = new AssemblyName(args.Name);
 
             var path = assemblyName.Name + ".dll";
-            if (assemblyName.CultureInfo?.Equals(CultureInfo.InvariantCulture) == false) path = String.Format(@"{0}\{1}", assemblyName.CultureInfo, path);
+            string filepath = Path.Combine(Utilities.BinDirectoryPath, path);
+
+            if (assemblyName.CultureInfo?.Equals(CultureInfo.InvariantCulture) == false)
+            { path = string.Format(@"{0}\{1}", assemblyName.CultureInfo, path); }
 
             using (Stream stream = executingAssembly.GetManifestResourceStream(path))
             {
-                if (stream == null) return null;
+                if (stream == null) { return null; }
 
                 var assemblyRawBytes = new byte[stream.Length];
                 stream.Read(assemblyRawBytes, 0, assemblyRawBytes.Length);
-                return Assembly.Load(assemblyRawBytes);
+                try
+                {
+                    File.WriteAllBytes(filepath, assemblyRawBytes);
+                }
+                catch (Exception) { }
             }
+
+            return Assembly.LoadFrom(filepath);
         }
     }
 }

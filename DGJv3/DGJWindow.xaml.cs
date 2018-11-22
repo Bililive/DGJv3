@@ -144,13 +144,13 @@ namespace DGJv3
 
             #region PackIcon 问题 workaround
 
-            PackIconPause.Kind = PackIconKind.Pause;
-            PackIconPlay.Kind = PackIconKind.Play;
-            PackIconVolumeHigh.Kind = PackIconKind.VolumeHigh;
-            PackIconSkipNext.Kind = PackIconKind.SkipNext;
-            PackIconSettings.Kind = PackIconKind.Settings;
-            PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
-            PackIconFileDocument.Kind = PackIconKind.FileDocument;
+           // PackIconPause.Kind = PackIconKind.Pause;
+           // PackIconPlay.Kind = PackIconKind.Play;
+           // PackIconVolumeHigh.Kind = PackIconKind.VolumeHigh;
+           // PackIconSkipNext.Kind = PackIconKind.SkipNext;
+           // PackIconSettings.Kind = PackIconKind.Settings;
+           // PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
+           // PackIconFileDocument.Kind = PackIconKind.FileDocument;
 
             #endregion
 

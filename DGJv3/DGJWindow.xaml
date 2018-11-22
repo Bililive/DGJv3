@@ -75,6 +75,7 @@
                     </ListView.View>
                 </ListView>
 
+
                 <materialDesign:Card Grid.Row="1" Margin="8,0" VerticalAlignment="Stretch">
                     <Grid>
                         <Grid.Resources>
@@ -104,29 +105,31 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding Playlist}">
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommmand}"
+                <GroupBox Header="空闲歌单">
+                    <ListView ItemsSource="{Binding Playlist}" Margin="-5">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommmand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                            <MenuItem Header="清空全部" Command="{Binding ClearPlaylistCommand}"/>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-                    <ListView.View>
-                        <GridView AllowsColumnReorder="False">
-                            <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                                <MenuItem Header="清空全部" Command="{Binding ClearPlaylistCommand}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False">
+                                <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </GroupBox>
                 <StackPanel Margin="5" Grid.Row="1" Orientation="Horizontal">
-                    <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Center"                            
                         Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                         materialDesign:DialogHost.DialogClosingAttached="DialogAddSongs">
                         <Button.CommandParameter>
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">歌名</TextBlock>
-                                <TextBox x:Name="AddSongsTextBox"></TextBox>
+                                <TextBox x:Name="AddSongsTextBox" Style="{StaticResource MaterialDesignTextBox}"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
@@ -151,7 +154,7 @@
                         <Button.CommandParameter>
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">歌名</TextBlock>
-                                <TextBox x:Name="AddSongPlaylistTextBox"></TextBox>
+                                <TextBox x:Name="AddSongPlaylistTextBox" Style="{StaticResource MaterialDesignTextBox}"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
@@ -179,7 +182,7 @@
                                     歌单ID(在你网页浏览你的歌单时，可以在网址栏看到一长串数字，那就是歌单ID啦）
                                     <LineBreak/>
                                 </TextBlock>
-                                <TextBox x:Name="AddPlaylistTextBox"></TextBox>
+                                <TextBox x:Name="AddPlaylistTextBox" Style="{StaticResource MaterialDesignTextBox}"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
@@ -269,28 +272,28 @@
                 <StackPanel Margin="20 0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
                     <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding PlayPauseCommand}">
                         <Grid>
-                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconPlay"
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="Play"
                                                  Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource False}}"/>
-                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconPause"
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="Pause"
                                                  Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}"/>
                         </Grid>
                     </Button>
                     <Button Margin="8 0" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding NextCommand}">
-                        <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSkipNext"/>
+                        <materialDesign:PackIcon Width="24" Height="24" Kind="SkipNext"/>
                     </Button>
                     <TextBlock FontSize="24" TextAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Width="80" Text="{Binding CurrentTime,StringFormat=mm\\:ss}" TextAlignment="Right"/>
                     /
                     <TextBlock Width="80" Text="{Binding TotalTime,StringFormat=mm\\:ss}" TextAlignment="Left"/>
                 </TextBlock>
-                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" VerticalAlignment="Center" Margin="15,10,0,0"/>
+                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
                     <!-- 设置开始 -->
                     <materialDesign:PopupBox Margin="30,0,0,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
                                              StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconSettings"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="Settings"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
@@ -312,11 +315,12 @@
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding IsLogRedirectDanmaku}" Checked="ToggleButton_OnChecked"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">点歌反馈发送到弹幕（需要登录中心）</TextBlock>
                                 </StackPanel>
-                                <TextBox Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
-                                         materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
-                                <TextBox Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
-                                         materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
-
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>
@@ -325,7 +329,7 @@
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="8,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconFilterRemove"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="FilterRemove"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
@@ -382,7 +386,7 @@
                                             <ComboBox Width="120" ItemsSource="{Binding Source={local:Enumeration {x:Type local:BlackListType}}}"
                                                 DisplayMemberPath="Description" SelectedValuePath="Value" x:Name="AddBlacklistComboBox"
                                                 materialDesign:HintAssist.Hint="黑名单类型" materialDesign:HintAssist.IsFloating="True"/>
-                                            <TextBox x:Name="AddBlacklistTextBox" materialDesign:HintAssist.Hint="黑名单内容" materialDesign:HintAssist.IsFloating="True"/>
+                                            <TextBox x:Name="AddBlacklistTextBox" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="黑名单内容" materialDesign:HintAssist.IsFloating="True"/>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True"
                                                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
@@ -409,7 +413,7 @@
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" x:Name="PackIconFileDocument"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="FileDocument"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8" Width="800" Height="400">
                             <Grid.RowDefinitions>
