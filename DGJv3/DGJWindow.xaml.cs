@@ -147,18 +147,6 @@ namespace DGJv3
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
 
-            #region PackIcon 问题 workaround
-
-            // PackIconPause.Kind = PackIconKind.Pause;
-            // PackIconPlay.Kind = PackIconKind.Play;
-            // PackIconVolumeHigh.Kind = PackIconKind.VolumeHigh;
-            // PackIconSkipNext.Kind = PackIconKind.SkipNext;
-            // PackIconSettings.Kind = PackIconKind.Settings;
-            // PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
-            // PackIconFileDocument.Kind = PackIconKind.FileDocument;
-
-            #endregion
-
         }
 
         /// <summary>
@@ -255,14 +243,22 @@ namespace DGJv3
                 SongInfo songInfo = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                {
                     songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+                }
 
                 if (songInfo == null)
+                {
                     if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                    {
                         songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+                    }
+                }
 
                 if (songInfo == null)
+                {
                     return;
+                }
 
                 Songs.Add(new SongItem(songInfo, "主播")); // TODO: 点歌人名字
             }
@@ -285,14 +281,22 @@ namespace DGJv3
                 SongInfo songInfo = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                {
                     songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+                }
 
                 if (songInfo == null)
+                {
                     if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                    {
                         songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+                    }
+                }
 
                 if (songInfo == null)
+                {
                     return;
+                }
 
                 Playlist.Add(songInfo);
             }
@@ -315,15 +319,21 @@ namespace DGJv3
                 List<SongInfo> songInfoList = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
+                {
                     songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
+                }
 
                 // 歌单只使用主搜索模块搜索
 
                 if (songInfoList == null)
+                {
                     return;
+                }
 
                 foreach (var item in songInfoList)
+                {
                     Playlist.Add(item);
+                }
             }
             AddPlaylistTextBox.Text = string.Empty;
         }
