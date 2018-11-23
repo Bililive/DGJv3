@@ -223,13 +223,9 @@ namespace DGJv3.InternalModule
                 {
                     return Fetch_exec(prot, host, path, data, referer);
                 }
-                catch (Exception e)
+                catch (WebException e)
                 {
-                    if (e.ToString().IndexOf("操作超时") != -1)
-                    {
-                        continue;
-                    }
-                    throw;
+                    continue;
                 }
             }
 
