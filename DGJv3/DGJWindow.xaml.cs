@@ -1,10 +1,12 @@
 ﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace DGJv3
@@ -49,26 +51,31 @@ namespace DGJv3
         public void Log(string text)
         {
             PluginMain.Log(text);
-            try
-            {
-                if (IsLogRedirectDanmaku && PluginMain.RoomId.HasValue)
-                {
-                    if (text.Length > 29)
-                    {
-                        text = text.Substring(0, Math.Min(text.Length - 1, 29));
-                    }
 
-                    var result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, text);
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (!PluginMain.RoomId.HasValue) { return; }
+                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, Uri.EscapeDataString(text));
                     if (result == null)
                     {
-                        PluginMain.Log("弹幕发送失败！");
+                        PluginMain.Log("发送弹幕时网络错误");
+                    }
+                    else
+                    {
+                        var j = JObject.Parse(result);
+                        if (j["msg"].ToString() != string.Empty)
+                        {
+                            PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log("弹幕发送错误 " + ex.ToString());
-            }
+                catch (Exception ex)
+                {
+                    PluginMain.Log("弹幕发送错误 " + ex.ToString());
+                }
+            });
         }
 
         public DGJWindow(DGJMain dGJMain)

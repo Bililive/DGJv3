@@ -223,7 +223,7 @@ namespace DGJv3.InternalModule
                 {
                     return Fetch_exec(prot, host, path, data, referer);
                 }
-                catch (WebException e)
+                catch (WebException)
                 {
                     if (retryCount >= 3)
                         throw;

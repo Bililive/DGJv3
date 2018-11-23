@@ -167,8 +167,6 @@ namespace DGJv3
 
         private int currentLyricIndex = -1;
 
-        private int lastPlaylistIndex = -1;
-
         public Player(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist)
         {
             Songs = songs;
