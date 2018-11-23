@@ -217,7 +217,7 @@ namespace DGJv3.InternalModule
 
         private static string Fetch(string prot, string host, string path, string data = null, string referer = null)
         {
-            for (int retryCount = 0; retryCount < 3; retryCount++)
+            for (int retryCount = 0; retryCount < 4; retryCount++)
             {
                 try
                 {
@@ -225,6 +225,8 @@ namespace DGJv3.InternalModule
                 }
                 catch (WebException e)
                 {
+                    if (retryCount >= 3)
+                        throw;
                     continue;
                 }
             }
