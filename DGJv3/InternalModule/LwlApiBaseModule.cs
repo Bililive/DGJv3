@@ -10,7 +10,7 @@ using System.Web;
 
 namespace DGJv3.InternalModule
 {
-    class LwlApiBaseModule : SearchModule
+    internal class LwlApiBaseModule : SearchModule
     {
         private string ServiceName = "undefined";
         protected void SetServiceName(string name) => ServiceName = name;
@@ -45,7 +45,9 @@ namespace DGJv3.InternalModule
                 if (dlurlobj["code"].ToString() == "200")
                 {
                     if (dlurlobj["result"] is JObject)
+                    {
                         dlurlobj = (JObject)dlurlobj["result"];
+                    }
                     else
                     {
                         dlurlobj = JObject.Parse(dlurlobj["result"].Value<string>());
@@ -65,13 +67,15 @@ namespace DGJv3.InternalModule
             }
         }
 
-        protected override string GetLyric(SongItem songInfo)
+        protected override string GetLyricById(string Id)
         {
             try
             {
-                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.SongId}"));
+                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={Id}"));
                 if (lobj["result"] is JObject)
-                    lobj = (JObject) lobj["result"];
+                {
+                    lobj = (JObject)lobj["result"];
+                }
                 else
                 {
                     lobj = JObject.Parse(lobj["result"].Value<string>());
@@ -89,12 +93,12 @@ namespace DGJv3.InternalModule
                     return lobj["lyric"].ToString();
                 }
                 else
-                { Log("歌词获取错误(id:" + songInfo.SongId + ")"); }
+                { Log("歌词获取错误(id:" + Id + ")"); }
 
             }
             catch (Exception ex)
-            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + songInfo.SongId + ")"); }
-            
+            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + Id + ")"); }
+
             return null;
         }
 
@@ -187,32 +191,7 @@ namespace DGJv3.InternalModule
             catch (Exception ex)
             { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
 
-            try
-            {
-                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={songInfo.Id}"));
-                if (lobj["result"] is JObject)
-                    lobj = (JObject)lobj["result"];
-                else
-                {
-                    lobj = JObject.Parse(lobj["result"].Value<string>());
-                }
-                if (lobj["lwlyric"] != null)
-                {
-                    songInfo.Lyric = lobj["lwlyric"].ToString();
-                }
-                else if (lobj["tlyric"] != null)
-                {
-                    songInfo.Lyric = lobj["tlyric"].ToString();
-                }
-                else if (lobj["lyric"] != null)
-                {
-                    songInfo.Lyric = lobj["lyric"].ToString();
-                }
-                else
-                { Log("歌词获取错误(id:" + songInfo.Id + ")"); }
-            }
-            catch (Exception ex)
-            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + songInfo.Id + ")"); }
+            songInfo.Lyric = GetLyricById(songInfo.Id);
 
             return songInfo;
         }
@@ -228,7 +207,10 @@ namespace DGJv3.InternalModule
                 catch (WebException)
                 {
                     if (retryCount >= 3)
+                    {
                         throw;
+                    }
+
                     continue;
                 }
             }
@@ -240,18 +222,24 @@ namespace DGJv3.InternalModule
         {
             string address;
             if (GetDNSResult(host, out string ip))
+            {
                 address = prot + ip + path;
+            }
             else
+            {
                 address = prot + host + path;
+            }
 
             var request = (HttpWebRequest)WebRequest.Create(address);
 
             request.Timeout = 4000;
             request.Host = host;
-            request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local")+ " RoomId/"+ RoomId.ToString();
+            request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local") + " RoomId/" + RoomId.ToString();
 
             if (referer != null)
+            {
                 request.Referer = referer;
+            }
 
             if (data != null)
             {
@@ -260,7 +248,9 @@ namespace DGJv3.InternalModule
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.ContentLength = postData.Length;
                 using (var stream = request.GetRequestStream())
+                {
                     stream.Write(postData, 0, postData.Length);
+                }
             }
 
             var response = (HttpWebResponse)request.GetResponse();
@@ -324,7 +314,9 @@ namespace DGJv3.InternalModule
             {
                 var http_result = Fetch("http://119.29.29.29/d?ttl=1&dn=" + domain);
                 if (http_result == string.Empty)
+                {
                     return false;
+                }
 
                 var m = regex.Match(http_result);
                 if (!m.Success)
@@ -345,6 +337,12 @@ namespace DGJv3.InternalModule
                 exception = ex;
                 return false;
             }
+        }
+
+        [Obsolete("Use GetLyricById instead", true)]
+        protected override string GetLyric(SongItem songInfo)
+        {
+            throw new NotImplementedException();
         }
 
         private static readonly Dictionary<string, DNSResult> DNSList = new Dictionary<string, DNSResult>();

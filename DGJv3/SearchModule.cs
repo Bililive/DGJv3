@@ -65,8 +65,13 @@ namespace DGJv3
             get
             {
                 if (uniqueId == null)
+                {
                     using (MD5 md5 = MD5.Create())
+                    {
                         uniqueId = BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes($"{GetType().FullName}{ModuleName}{ModuleAuthor}"))).Replace("-", "");
+                    }
+                }
+
                 return uniqueId;
             }
         }
@@ -158,17 +163,20 @@ namespace DGJv3
             }
         }
 
+        [Obsolete("Use GetLyricById instead", true)]
         protected abstract string GetLyric(SongItem songInfo);
 
-        internal string SafeGetLyric(SongItem songInfo)
+        protected abstract string GetLyricById(string Id);
+
+        internal string SafeGetLyricById(string Id)
         {
             try
             {
-                return GetLyric(songInfo);
+                return GetLyricById(Id);
             }
             catch (Exception ex)
             {
-                WriteError(ex, "SongId: " + songInfo.SongId);
+                WriteError(ex, "Id: " + Id);
                 return null;
             }
         }

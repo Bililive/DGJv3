@@ -270,7 +270,7 @@ namespace DGJv3
                 SongInfo info = Playlist[index];
                 if (info.Lyric == null)
                 {
-                    info.Lyric = info.Module.SafeGetLyric(currentSong);
+                    info.Lyric = info.Module.SafeGetLyricById(info.Id);
                 }
                 Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
             }

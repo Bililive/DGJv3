@@ -173,7 +173,11 @@ namespace DGJv3
             LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
             if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
             {
-                IsLogRedirectDanmaku = LoginCenterAPIWarpper.DoAuth(PluginMain).Result;
+                Task.Run(async () =>
+                {
+                    await Task.Delay(2000); // 其实不应该这么写的，不太合理
+                    IsLogRedirectDanmaku = await LoginCenterAPIWarpper.DoAuth(PluginMain);
+                });
             }
             else
             {
