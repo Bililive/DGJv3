@@ -250,7 +250,7 @@ namespace DGJv3
                 {
                     index = random.Next(0, Playlist.Count);
                     time++;
-                } while (index == lastPlaylistIndex && time < 3);
+                } while (Songs.Any(ele=>Playlist[index].Id == ele.SongId) && time < 3);
 
                 Songs.Add(new SongItem(Playlist[index], Utilities.SparePlaylistUser)); 
             }

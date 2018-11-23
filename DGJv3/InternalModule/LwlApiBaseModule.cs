@@ -215,8 +215,26 @@ namespace DGJv3.InternalModule
             return songInfo;
         }
 
-
         private static string Fetch(string prot, string host, string path, string data = null, string referer = null)
+        {
+            for (int retryCount = 0; retryCount < 4; retryCount++)
+            {
+                try
+                {
+                    return Fetch_exec(prot, host, path, data, referer);
+                }
+                catch (WebException e)
+                {
+                    if (retryCount >= 3)
+                        throw;
+                    continue;
+                }
+            }
+
+            return null;
+        }
+
+        private static string Fetch_exec(string prot, string host, string path, string data = null, string referer = null)
         {
             string address;
             if (GetDNSResult(host, out string ip))
@@ -226,7 +244,7 @@ namespace DGJv3.InternalModule
 
             var request = (HttpWebRequest)WebRequest.Create(address);
 
-            request.Timeout = 10000;
+            request.Timeout = 4000;
             request.Host = host;
             request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local");
 
