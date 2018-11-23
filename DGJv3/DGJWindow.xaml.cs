@@ -57,7 +57,7 @@ namespace DGJv3
                 try
                 {
                     if (!PluginMain.RoomId.HasValue) { return; }
-                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, Uri.EscapeDataString(text));
+                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, text);
                     if (result == null)
                     {
                         PluginMain.Log("发送弹幕时网络错误");
@@ -169,6 +169,14 @@ namespace DGJv3
             IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
 
             LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
+            if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
+            {
+                IsLogRedirectDanmaku = LoginCenterAPIWarpper.DoAuth(PluginMain).Result;
+            }
+            else
+            {
+                IsLogRedirectDanmaku = false;
+            }
 
             Playlist.Clear();
             foreach (var item in config.Playlist)
