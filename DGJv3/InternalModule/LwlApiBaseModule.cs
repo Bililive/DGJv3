@@ -24,6 +24,8 @@ namespace DGJv3.InternalModule
         protected const string INFO_EMAIL = "dgj@genteure.com";
         protected const string INFO_VERSION = "1.1";
 
+        internal static int RoomId = 0;
+
         internal LwlApiBaseModule()
         {
             IsPlaylistSupported = true;
@@ -246,7 +248,7 @@ namespace DGJv3.InternalModule
 
             request.Timeout = 4000;
             request.Host = host;
-            request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local");
+            request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local")+ " RoomId/"+ RoomId.ToString();
 
             if (referer != null)
                 request.Referer = referer;

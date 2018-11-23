@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using DGJv3.InternalModule;
+using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -146,7 +147,8 @@ namespace DGJv3
             ApplyConfig(Config.Load());
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
-
+            PluginMain.Connected += (sender, e) => { LwlApiBaseModule.RoomId = e.roomid; };
+            PluginMain.Disconnected += (sender, e) => { LwlApiBaseModule.RoomId = 0; };
         }
 
         /// <summary>
