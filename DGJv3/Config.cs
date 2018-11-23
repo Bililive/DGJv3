@@ -41,7 +41,7 @@ namespace DGJv3
         public bool IsUserPrior { get; set; } = true;
 
         [JsonProperty("lrd")]
-        public bool IsLogRedirectDanmaku { get; set; } = true;
+        public bool IsLogRedirectDanmaku { get; set; } = false;
 
         [JsonProperty("plst")]
         public SongInfo[] Playlist { get; set; } = new SongInfo[0];

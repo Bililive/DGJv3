@@ -56,7 +56,7 @@
                     <RowDefinition Height="110"/>
                 </Grid.RowDefinitions>
 
-                <ListView ItemsSource="{Binding Songs}" Grid.RowSpan="2">
+                <ListView ItemsSource="{Binding Songs}">
                     <ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
@@ -74,7 +74,6 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-
 
                 <materialDesign:Card Grid.Row="1" Margin="8,0" VerticalAlignment="Stretch">
                     <Grid>
@@ -179,8 +178,8 @@
                         <Button.CommandParameter>
                             <StackPanel Margin="16">
                                 <TextBlock FontSize="16">
-                                    歌单ID(在你网页浏览你的歌单时，可以在网址栏看到一长串数字，那就是歌单ID啦）
-                                    <LineBreak/>
+                                    歌单ID<LineBreak/>
+                                    (在你网页浏览你的歌单时，可以在网址栏看到一长串数字，那就是歌单ID啦）
                                 </TextBlock>
                                 <TextBox x:Name="AddPlaylistTextBox" Style="{StaticResource MaterialDesignTextBox}"></TextBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -312,7 +311,7 @@
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">用户点歌优先于空闲歌单播放</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding IsLogRedirectDanmaku}" Checked="ToggleButton_OnChecked"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding IsLogRedirectDanmaku}" x:Name="LogRedirectToggleButton" Checked="LogRedirectToggleButton_OnChecked"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">点歌反馈发送到弹幕（需要登录中心）</TextBlock>
                                 </StackPanel>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"

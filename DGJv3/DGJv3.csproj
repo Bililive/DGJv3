@@ -110,6 +110,7 @@
     <Compile Include="InternalModule\LwlApiNetease.cs" />
     <Compile Include="InternalModule\LwlApiTencent.cs" />
     <Compile Include="InternalModule\LwlApiXiami.cs" />
+    <Compile Include="LoginCenterAPIWarpper.cs" />
     <Compile Include="LyricChangedEvent.cs" />
     <Compile Include="NullSearchModule.cs" />
     <Compile Include="PlayerVolumeConverter.cs" />
