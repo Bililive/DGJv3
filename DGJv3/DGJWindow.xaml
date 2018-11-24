@@ -320,6 +320,9 @@
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding LogDanmakuLengthLimit,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="弹幕长度限制" materialDesign:HintAssist.IsFloating="True"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>

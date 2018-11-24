@@ -49,6 +49,8 @@ namespace DGJv3
 
         public bool IsLogRedirectDanmaku { get; set; }
 
+        public int LogDanmakuLengthLimit { get; set; }
+
         public void Log(string text)
         {
             PluginMain.Log(text);
@@ -58,7 +60,9 @@ namespace DGJv3
                 try
                 {
                     if (!PluginMain.RoomId.HasValue) { return; }
-                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, text);
+
+                    string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
+                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, finalText);
                     if (result == null)
                     {
                         PluginMain.Log("发送弹幕时网络错误");
@@ -169,6 +173,7 @@ namespace DGJv3
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
             IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
+            LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
             LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
             if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
@@ -220,7 +225,8 @@ namespace DGJv3
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
-            IsLogRedirectDanmaku = IsLogRedirectDanmaku
+            IsLogRedirectDanmaku = IsLogRedirectDanmaku,
+            LogDanmakuLengthLimit = LogDanmakuLengthLimit,
         };
 
         /// <summary>
