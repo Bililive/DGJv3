@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DGJv3
 {
     /// <summary>
     /// 空搜索模块
     /// </summary>
-    sealed class NullSearchModule : SearchModule
+    internal sealed class NullSearchModule : SearchModule
     {
         public NullSearchModule() => SetInfo("不使用", string.Empty, string.Empty, string.Empty, string.Empty);
 
@@ -19,7 +20,13 @@ namespace DGJv3
             return null;
         }
 
+        [Obsolete("Use GetLyricById instead", true)]
         protected override string GetLyric(SongItem songInfo)
+        {
+            return null;
+        }
+
+        protected override string GetLyricById(string Id)
         {
             return null;
         }

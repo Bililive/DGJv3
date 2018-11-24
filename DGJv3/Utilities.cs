@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DGJv3
 {
@@ -39,6 +36,8 @@ namespace DGJv3
         internal static readonly string DataDirectoryPath = Path.Combine(AssemblyDirectory, "点歌姬v3");
 
         internal static readonly string SongsCacheDirectoryPath = Path.Combine(DataDirectoryPath, "歌曲缓存");
+
+        internal static readonly string BinDirectoryPath = Path.Combine(DataDirectoryPath, "bin");
 
         internal static readonly string ConfigFilePath = Path.Combine(DataDirectoryPath, "config.json");
 

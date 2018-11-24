@@ -1,21 +1,14 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using DGJv3.InternalModule;
+using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace DGJv3
 {
@@ -56,21 +49,38 @@ namespace DGJv3
 
         public bool IsLogRedirectDanmaku { get; set; }
 
-        private bool isLoginCenterAuthed = false;
+        public int LogDanmakuLengthLimit { get; set; }
 
         public void Log(string text)
         {
             PluginMain.Log(text);
-            if (IsLogRedirectDanmaku && isLoginCenterAuthed && PluginMain.RoomId.HasValue)
+
+            Task.Run(() =>
             {
-                if (text.Length > 29)
-                    text = text.Substring(0, Math.Min(text.Length - 1, 29));
-                var result = Extensions.Send(PluginMain.RoomId.Value, text);
-                if (result == null)
+                try
                 {
-                    PluginMain.Log("弹幕发送失败！");
+                    if (!PluginMain.RoomId.HasValue) { return; }
+
+                    string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
+                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, finalText);
+                    if (result == null)
+                    {
+                        PluginMain.Log("发送弹幕时网络错误");
+                    }
+                    else
+                    {
+                        var j = JObject.Parse(result);
+                        if (j["msg"].ToString() != string.Empty)
+                        {
+                            PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
+                        }
+                    }
                 }
-            }
+                catch (Exception ex)
+                {
+                    PluginMain.Log("弹幕发送错误 " + ex.ToString());
+                }
+            });
         }
 
         public DGJWindow(DGJMain dGJMain)
@@ -141,19 +151,8 @@ namespace DGJv3
             ApplyConfig(Config.Load());
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
-
-            #region PackIcon 问题 workaround
-
-            PackIconPause.Kind = PackIconKind.Pause;
-            PackIconPlay.Kind = PackIconKind.Play;
-            PackIconVolumeHigh.Kind = PackIconKind.VolumeHigh;
-            PackIconSkipNext.Kind = PackIconKind.SkipNext;
-            PackIconSettings.Kind = PackIconKind.Settings;
-            PackIconFilterRemove.Kind = PackIconKind.FilterRemove;
-            PackIconFileDocument.Kind = PackIconKind.FileDocument;
-
-            #endregion
-
+            PluginMain.Connected += (sender, e) => { LwlApiBaseModule.RoomId = e.roomid; };
+            PluginMain.Disconnected += (sender, e) => { LwlApiBaseModule.RoomId = 0; };
         }
 
         /// <summary>
@@ -174,21 +173,37 @@ namespace DGJv3
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
             IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
-            if (Extensions.CheckAuth(PluginMain))
+            LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
+
+            LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
+            if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
             {
-                isLoginCenterAuthed = true;
+                Task.Run(async () =>
+                {
+                    await Task.Delay(2000); // 其实不应该这么写的，不太合理
+                    IsLogRedirectDanmaku = await LoginCenterAPIWarpper.DoAuth(PluginMain);
+                });
             }
+            else
+            {
+                IsLogRedirectDanmaku = false;
+            }
+
             Playlist.Clear();
             foreach (var item in config.Playlist)
             {
                 item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
                 if (item.Module != null)
+                {
                     Playlist.Add(item);
+                }
             }
 
             Blacklist.Clear();
             foreach (var item in config.Blacklist)
+            {
                 Blacklist.Add(item);
+            }
         }
 
         /// <summary>
@@ -210,7 +225,8 @@ namespace DGJv3
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
-            IsLogRedirectDanmaku = IsLogRedirectDanmaku
+            IsLogRedirectDanmaku = IsLogRedirectDanmaku,
+            LogDanmakuLengthLimit = LogDanmakuLengthLimit,
         };
 
         /// <summary>
@@ -247,14 +263,22 @@ namespace DGJv3
                 SongInfo songInfo = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                {
                     songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+                }
 
                 if (songInfo == null)
+                {
                     if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                    {
                         songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+                    }
+                }
 
                 if (songInfo == null)
+                {
                     return;
+                }
 
                 Songs.Add(new SongItem(songInfo, "主播")); // TODO: 点歌人名字
             }
@@ -277,14 +301,22 @@ namespace DGJv3
                 SongInfo songInfo = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule)
+                {
                     songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
+                }
 
                 if (songInfo == null)
+                {
                     if (SearchModules.SecondaryModule != SearchModules.NullModule)
+                    {
                         songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
+                    }
+                }
 
                 if (songInfo == null)
+                {
                     return;
+                }
 
                 Playlist.Add(songInfo);
             }
@@ -307,15 +339,21 @@ namespace DGJv3
                 List<SongInfo> songInfoList = null;
 
                 if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
+                {
                     songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
+                }
 
                 // 歌单只使用主搜索模块搜索
 
                 if (songInfoList == null)
+                {
                     return;
+                }
 
                 foreach (var item in songInfoList)
+                {
                     Playlist.Add(item);
+                }
             }
             AddPlaylistTextBox.Text = string.Empty;
         }
@@ -349,30 +387,18 @@ namespace DGJv3
             Hide();
         }
 
-        private async void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        private async void LogRedirectToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            var toggleBtn = (ToggleButton) sender;
-            if (Extensions.CheckLoginCenter() == false)
+            try
             {
-                Log("需要安装 登录中心 以使用此功能");
-                toggleBtn.IsChecked = false;
-                return;
+                if (!await LoginCenterAPIWarpper.DoAuth(PluginMain))
+                {
+                    LogRedirectToggleButton.IsChecked = false;
+                }
             }
-            var result = await Extensions.DoAuth(PluginMain);
-            if (Extensions.CheckAuth(PluginMain))
+            catch (Exception)
             {
-                Log("授权成功");
-                isLoginCenterAuthed = true;
-            }
-            else
-            {
-                Log("授权失败");
-                isLoginCenterAuthed = false;
-            }
-
-            if (!isLoginCenterAuthed)
-            {
-                toggleBtn.IsChecked = false;
+                LogRedirectToggleButton.IsChecked = false;
             }
         }
     }

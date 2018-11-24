@@ -12,7 +12,7 @@ using System.Windows.Threading;
 
 namespace DGJv3
 {
-    class Player : INotifyPropertyChanged
+    internal class Player : INotifyPropertyChanged
     {
         private Random random = new Random();
 
@@ -67,7 +67,13 @@ namespace DGJv3
         public TimeSpan CurrentTime
         {
             get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.CurrentTime;
-            set { if (mp3FileReader != null) mp3FileReader.CurrentTime = value; }
+            set
+            {
+                if (mp3FileReader != null)
+                {
+                    mp3FileReader.CurrentTime = value;
+                }
+            }
         }
 
         /// <summary>
@@ -90,7 +96,17 @@ namespace DGJv3
         public bool IsPlaying
         {
             get => Status == PlayerStatus.Playing;
-            set { if (value) Play(); else Pause(); }
+            set
+            {
+                if (value)
+                {
+                    Play();
+                }
+                else
+                {
+                    Pause();
+                }
+            }
         }
 
         /// <summary>
@@ -167,8 +183,6 @@ namespace DGJv3
 
         private int currentLyricIndex = -1;
 
-        private int lastPlaylistIndex = -1;
-
         public Player(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist)
         {
             Songs = songs;
@@ -176,9 +190,9 @@ namespace DGJv3
             dispatcher = Dispatcher.CurrentDispatcher;
             newSongTimer.Tick += NewSongTimer_Tick;
             updateTimeTimer.Tick += UpdateTimeTimer_Tick;
-            this.PropertyChanged += This_PropertyChanged;
-            this.PlayPauseCommand = new UniversalCommand((obj) => { IsPlaying ^= true; });
-            this.NextCommand = new UniversalCommand((obj) => { Next(); });
+            PropertyChanged += This_PropertyChanged;
+            PlayPauseCommand = new UniversalCommand((obj) => { IsPlaying ^= true; });
+            NextCommand = new UniversalCommand((obj) => { Next(); });
         }
 
         private void This_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -250,9 +264,15 @@ namespace DGJv3
                 {
                     index = random.Next(0, Playlist.Count);
                     time++;
-                } while (index == lastPlaylistIndex && time < 3);
+                } while (Songs.Any(ele => Playlist[index].Id == ele.SongId) && time < 3);
 
-                Songs.Add(new SongItem(Playlist[index], Utilities.SparePlaylistUser)); 
+
+                SongInfo info = Playlist[index];
+                if (info.Lyric == null)
+                {
+                    info.Lyric = info.Module.SafeGetLyricById(info.Id);
+                }
+                Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
             }
         }
 
@@ -400,7 +420,11 @@ namespace DGJv3
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            if (EqualityComparer<T>.Default.Equals(field, value))
+            {
+                return false;
+            }
+
             field = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
