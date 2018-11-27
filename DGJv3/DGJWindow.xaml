@@ -281,9 +281,9 @@
                         <materialDesign:PackIcon Width="24" Height="24" Kind="SkipNext"/>
                     </Button>
                     <TextBlock FontSize="24" TextAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Width="80" Text="{Binding CurrentTime,StringFormat=mm\\:ss}" TextAlignment="Right"/>
+                    <TextBlock Width="80" Text="{Binding CurrentTimeString}" TextAlignment="Right"/>
                     /
-                    <TextBlock Width="80" Text="{Binding TotalTime,StringFormat=mm\\:ss}" TextAlignment="Left"/>
+                    <TextBlock Width="80" Text="{Binding TotalTimeString}" TextAlignment="Left"/>
                 </TextBlock>
                     <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"

@@ -102,8 +102,8 @@ namespace DGJv3
                 播放列表 = localsongs,
                 空闲歌单 = localplaylist,
                 歌曲数量 = Songs.Count,
-                当前播放时间 = Player.CurrentTime.ToString("mm\\:ss"),
-                当前总时间 = Player.TotalTime.ToString("mm\\:ss"),
+                当前播放时间 = Player.CurrentTimeString,
+                当前总时间 = Player.TotalTimeString,
                 总共最大点歌数量 = DanmuHandler.MaxTotalSongNum,
                 单人最大点歌数量 = DanmuHandler.MaxPersonSongNum,
             }) ?? string.Empty;
