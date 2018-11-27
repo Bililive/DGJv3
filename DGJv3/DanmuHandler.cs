@@ -127,7 +127,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.Last(x => x.UserName == danmakuModel.UserName && x.Status != SongStatus.Playing);
+                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && x.Status != SongStatus.Playing);
                             if (songItem != null)
                             {
                                 songItem.Remove(Songs, Downloader, Player);
