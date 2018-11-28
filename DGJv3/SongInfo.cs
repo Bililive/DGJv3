@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace DGJv3
 {
-    public class SongInfo
+    public class SongInfo : INotifyPropertyChanged
     {
         [JsonIgnore]
         public SearchModule Module;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [JsonProperty("smid")]
         public string ModuleId { get; set; }
