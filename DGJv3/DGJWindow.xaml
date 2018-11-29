@@ -242,23 +242,28 @@
 
                 <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
-                缓存歌曲中
-                <LineBreak/>
-                <TextBlock Text="{Binding DownloadSpeed,StringFormat=0.## KiB/s}"/>
-            </TextBlock>
+                    缓存歌曲中
+                    <LineBreak/>
+                    <TextBlock Text="{Binding DownloadSpeed,StringFormat=0.## KiB/s}"/>
+                </TextBlock>
+                <!--
                 <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
                                  Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
                     <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="50" IsIndeterminate="True"/>
                 </materialDesign:Card>
-
+                -->
+                
                 <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
-                缓存歌曲中
+                    缓存歌曲中
                 </TextBlock>
+               
+                <!--
                 <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
                                  Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
                     <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True"/>
                 </materialDesign:Card>
+                -->
             </Grid>
             <!-- 下载状态结束 -->
 
