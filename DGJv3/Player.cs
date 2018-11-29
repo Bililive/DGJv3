@@ -319,17 +319,19 @@ namespace DGJv3
         {
             try
             {
-                wavePlayer.Stop();
-                wavePlayer.Dispose();
-                mp3FileReader.Close();
-                mp3FileReader.Dispose();
-                wavePlayer = null;
-                sampleChannel = null;
-                mp3FileReader = null;
+                wavePlayer?.Dispose();
             }
-            catch (Exception)
+            catch (Exception) { }
+
+            try
             {
+                mp3FileReader?.Dispose();
             }
+            catch (Exception) { }
+
+            wavePlayer = null;
+            sampleChannel = null;
+            mp3FileReader = null;
 
             try
             {
@@ -422,7 +424,7 @@ namespace DGJv3
         {
             if (wavePlayer != null)
             {
-                UnloadSong();
+                wavePlayer.Stop();
             }
         }
 
