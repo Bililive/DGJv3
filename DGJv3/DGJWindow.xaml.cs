@@ -55,32 +55,42 @@ namespace DGJv3
         {
             PluginMain.Log(text);
 
-            Task.Run(() =>
+            if (IsLogRedirectDanmaku)
             {
-                try
+                Task.Run(() =>
                 {
-                    if (!PluginMain.RoomId.HasValue) { return; }
+                    try
+                    {
+                        if (!PluginMain.RoomId.HasValue) { return; }
 
-                    string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
-                    string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, finalText);
-                    if (result == null)
-                    {
-                        PluginMain.Log("发送弹幕时网络错误");
-                    }
-                    else
-                    {
-                        var j = JObject.Parse(result);
-                        if (j["msg"].ToString() != string.Empty)
+                        string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
+                        string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, finalText);
+                        if (result == null)
                         {
-                            PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
+                            PluginMain.Log("发送弹幕时网络错误");
+                        }
+                        else
+                        {
+                            var j = JObject.Parse(result);
+                            if (j["msg"].ToString() != string.Empty)
+                            {
+                                PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    PluginMain.Log("弹幕发送错误 " + ex.ToString());
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        if (ex.GetType().FullName.Equals("LoginCenter.API.PluginNotAuthorizedException"))
+                        {
+                            IsLogRedirectDanmaku = false;
+                        }
+                        else
+                        {
+                            PluginMain.Log("弹幕发送错误 " + ex.ToString());
+                        }
+                    }
+                });
+            }
         }
 
         public DGJWindow(DGJMain dGJMain)
