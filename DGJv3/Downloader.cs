@@ -148,6 +148,11 @@ namespace DGJv3
 
                         webClient.DownloadFileAsync(new Uri(url), currentSong.FilePath);
                     }
+                    else
+                    {
+                        dispatcher.Invoke(() => Songs.Remove(currentSong));
+                        currentSong = null;
+                    }
                 }
                 catch (Exception ex)
                 {
