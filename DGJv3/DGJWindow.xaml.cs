@@ -95,6 +95,18 @@ namespace DGJv3
 
         public DGJWindow(DGJMain dGJMain)
         {
+            void addResource(string uri)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                {
+                    Source = new Uri(uri)
+                });
+            }
+            addResource("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml");
+            addResource("pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml");
+            addResource("pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.DeepOrange.xaml");
+            addResource("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml");
+
             DataContext = this;
             PluginMain = dGJMain;
             Songs = new ObservableCollection<SongItem>();
