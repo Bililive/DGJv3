@@ -32,8 +32,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.deeporange.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.DeepOrange.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -68,9 +68,9 @@
                     <ListView.View>
                         <GridView AllowsColumnReorder="False">
                             <GridViewColumn Header="状态" DisplayMemberBinding="{Binding Status,Converter={StaticResource SongStatusStringConverter}}"/>
-                            <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding SongName}"/>
-                            <GridViewColumn Header="点歌人" DisplayMemberBinding="{Binding UserName}"/>
-                            <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
+                            <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding SongName, Mode=OneTime}"/>
+                            <GridViewColumn Header="点歌人" DisplayMemberBinding="{Binding UserName, Mode=OneTime}"/>
+                            <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText, Mode=OneTime}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -115,8 +115,8 @@
                         </ListView.ContextMenu>
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
-                                <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding Name}"/>
-                                <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText}"/>
+                                <GridViewColumn Header="歌名" DisplayMemberBinding="{Binding Name, Mode=OneTime}"/>
+                                <GridViewColumn Header="歌手" DisplayMemberBinding="{Binding SingersText, Mode=OneTime}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -242,10 +242,10 @@
 
                 <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
-                缓存歌曲中
-                <LineBreak/>
-                <TextBlock Text="{Binding DownloadSpeed,StringFormat=0.## KiB/s}"/>
-            </TextBlock>
+                    缓存歌曲中
+                    <LineBreak/>
+                    <TextBlock Text="{Binding DownloadSpeed,StringFormat=0.## KiB/s}"/>
+                </TextBlock>
                 <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
                                  Visibility="{Binding DownloadPercentage,Converter={StaticResource NotEqualsVisibilityConverter},ConverterParameter={StaticResource Zero}}">
                     <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="50" IsIndeterminate="True"/>
@@ -253,7 +253,7 @@
 
                 <TextBlock Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
-                缓存歌曲中
+                    缓存歌曲中
                 </TextBlock>
                 <materialDesign:Card Grid.Column="2" Margin="10,0" UniformCornerRadius="14" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"
                                  Visibility="{Binding IsModuleDownloading,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}">
@@ -272,18 +272,18 @@
                     <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding PlayPauseCommand}">
                         <Grid>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Play"
-                                                 Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource False}}"/>
+                                                 Visibility="{Binding IsPlaying,Mode=OneWay,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource False}}"/>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Pause"
-                                                 Visibility="{Binding IsPlaying,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}"/>
+                                                 Visibility="{Binding IsPlaying,Mode=OneWay,Converter={StaticResource EqualsVisibilityConverter},ConverterParameter={StaticResource True}}"/>
                         </Grid>
                     </Button>
                     <Button Margin="8 0" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding NextCommand}">
                         <materialDesign:PackIcon Width="24" Height="24" Kind="SkipNext"/>
                     </Button>
                     <TextBlock FontSize="24" TextAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Width="80" Text="{Binding CurrentTime,StringFormat=mm\\:ss}" TextAlignment="Right"/>
+                    <TextBlock Width="80" Text="{Binding CurrentTimeString, Mode=OneWay}" TextAlignment="Right"/>
                     /
-                    <TextBlock Width="80" Text="{Binding TotalTime,StringFormat=mm\\:ss}" TextAlignment="Left"/>
+                    <TextBlock Width="80" Text="{Binding TotalTimeString, Mode=OneWay}" TextAlignment="Left"/>
                 </TextBlock>
                     <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
@@ -433,7 +433,7 @@
                                      TextAlignment="Left" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0" ContextMenu="{x:Null}"
                                      Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="模板   不会改请保持默认"
                                      TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>
-                            <TextBox Text="{Binding Writer.Result}" IsEnabled="False" TextAlignment="Left"
+                            <TextBox Text="{Binding Writer.Result,Mode=OneWay}" IsEnabled="False" TextAlignment="Left"
                                      VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1"
                                      Style="{StaticResource MaterialDesignTextAreaTextBox}" materialDesign:HintAssist.Hint="输出预览"
                                      TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="False"/>

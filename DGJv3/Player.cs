@@ -76,6 +76,8 @@ namespace DGJv3
             }
         }
 
+        public string CurrentTimeString { get => Math.Floor(CurrentTime.TotalMinutes) + ":" + CurrentTime.Seconds; }
+
         /// <summary>
         /// 当前播放时间秒数
         /// </summary>
@@ -89,6 +91,8 @@ namespace DGJv3
         /// 歌曲全长
         /// </summary>
         public TimeSpan TotalTime { get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.TotalTime; }
+
+        public string TotalTimeString { get => Math.Floor(TotalTime.TotalMinutes) + ":" + TotalTime.Seconds; }
 
         /// <summary>
         /// 当前是否正在播放歌曲
@@ -204,6 +208,11 @@ namespace DGJv3
             else if (e.PropertyName == nameof(CurrentTime))
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTimeDouble)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTimeString)));
+            }
+            else if (e.PropertyName == nameof(TotalTime))
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTimeString)));
             }
         }
 
@@ -310,17 +319,19 @@ namespace DGJv3
         {
             try
             {
-                wavePlayer.Stop();
-                wavePlayer.Dispose();
-                mp3FileReader.Close();
-                mp3FileReader.Dispose();
-                wavePlayer = null;
-                sampleChannel = null;
-                mp3FileReader = null;
+                wavePlayer?.Dispose();
             }
-            catch (Exception)
+            catch (Exception) { }
+
+            try
             {
+                mp3FileReader?.Dispose();
             }
+            catch (Exception) { }
+
+            wavePlayer = null;
+            sampleChannel = null;
+            mp3FileReader = null;
 
             try
             {
@@ -413,7 +424,7 @@ namespace DGJv3
         {
             if (wavePlayer != null)
             {
-                UnloadSong();
+                wavePlayer.Stop();
             }
         }
 

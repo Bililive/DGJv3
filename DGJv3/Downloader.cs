@@ -12,7 +12,7 @@ using System.Windows.Threading;
 
 namespace DGJv3
 {
-    class Downloader : INotifyPropertyChanged
+    internal class Downloader : INotifyPropertyChanged
     {
         private Dispatcher dispatcher;
 
@@ -85,7 +85,9 @@ namespace DGJv3
             if (currentSong == null)
             {
                 if (IsModuleDownloading)
+                {
                     IsModuleDownloading = false;
+                }
 
                 foreach (var songItem in Songs)
                 {
@@ -135,27 +137,31 @@ namespace DGJv3
             {
                 try
                 {
-                    webClient = new WebClient();
+                    string url = currentSong.GetDownloadUrl();
+                    if (url != null)
+                    {
+                        webClient = new WebClient();
 
-                    webClient.DownloadProgressChanged += OnDownloadProgressChanged;
-                    webClient.DownloadFileCompleted += OnDownloadFileCompleted;
-                    webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.450 Safari/537.35");
+                        webClient.DownloadProgressChanged += OnDownloadProgressChanged;
+                        webClient.DownloadFileCompleted += OnDownloadFileCompleted;
+                        webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.450 Safari/537.35");
 
-                    webClient.DownloadFileAsync(new Uri(currentSong.GetDownloadUrl()), currentSong.FilePath);
+                        webClient.DownloadFileAsync(new Uri(url), currentSong.FilePath);
+                    }
+                    else
+                    {
+                        dispatcher.Invoke(() => Songs.Remove(currentSong));
+                        currentSong = null;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    try
-                    {
-                        webClient.Dispose();
-                        webClient = null;
-                    }
-                    catch (Exception)
-                    { }
+                    webClient?.Dispose();
+                    webClient = null;
 
                     dispatcher.Invoke(() => Songs.Remove(currentSong));
-                    currentSong = null;
                     Log("启动下载错误 " + currentSong.SongName, ex);
+                    currentSong = null;
                 }
             }
         }
@@ -222,7 +228,11 @@ namespace DGJv3
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            if (EqualityComparer<T>.Default.Equals(field, value))
+            {
+                return false;
+            }
+
             field = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return true;
