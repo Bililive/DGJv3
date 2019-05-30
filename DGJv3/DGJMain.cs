@@ -40,7 +40,7 @@ namespace DGJv3
             {
                 if (versionChecker.FetchInfo())
                 {
-                    Version current = Assembly.GetEntryAssembly().GetName().Version;
+                    Version current = new Version(BuildInfo.Version);
 
                     if (versionChecker.HasNewVersion(current))
                     {
