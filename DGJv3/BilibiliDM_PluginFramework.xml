@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BilibiliDM_PluginFramework</name>
+    </assembly>
+    <members>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginName">
+            <summary>
+            插件名稱
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginAuth">
+            <summary>
+            插件作者
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginCont">
+            <summary>
+            插件作者聯繫方式
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginVer">
+            <summary>
+            插件版本號
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginDesc">
+            <summary>
+            插件描述
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.PlubinDesc">
+            <summary>
+            插件描述, 已過期, 請使用PluginDesc
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.Status">
+            <summary>
+            插件狀態
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.RoomId">
+            <summary>
+            當前連接中的房間
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.Start">
+            <summary>
+            啟用插件方法 請重寫此方法
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.Stop">
+            <summary>
+            禁用插件方法 請重寫此方法
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.Admin">
+            <summary>
+            管理插件方法 請重寫此方法
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.Inited">
+            <summary>
+            此方法在所有插件加载完毕后调用
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.DeInit">
+            <summary>
+            反初始化方法, 在弹幕姬主程序退出时调用, 若有需要请重写,
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.Log(System.String)">
+            <summary>
+            打日志
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.DebugMode">
+            <summary>
+            弹幕姬是否是以Debug模式启动的
+            </summary>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.AddDM(System.String,System.Boolean)">
+            <summary>
+            打彈幕
+            </summary>
+            <param name="text"></param>
+            <param name="fullscreen"></param>
+        </member>
+        <member name="M:BilibiliDM_PluginFramework.DMPlugin.SendSSPMsg(System.String)">
+            <summary>
+            发送伪春菜脚本, 前提是用户有打开伪春菜并允许弹幕姬和伪春菜联动(默认允许)
+            </summary>
+            <param name="text">Sakura Script脚本</param>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment">
+            <summary>
+            彈幕
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend">
+            <summary>
+            禮物
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftTop">
+            <summary>
+            禮物排名
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome">
+            <summary>
+            歡迎老爷
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveStart">
+            <summary>
+            直播開始
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveEnd">
+            <summary>
+            直播結束
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Unknown">
+            <summary>
+            其他
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard">
+            <summary>
+            欢迎船员
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy">
+            <summary>
+            购买船票（上船）
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.MsgType">
+            <summary>
+            消息類型
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.CommentText">
+            <summary>
+            彈幕內容
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.CommentUser">
+            <summary>
+            彈幕用戶
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserName">
+            <summary>
+            消息触发者用户名
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserID">
+            <summary>
+            消息触发者用户ID
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserGuardLevel">
+            <summary>
+            用户舰队等级
+            <para>0 为非船员 1 为总督 2 为提督 3 为舰长</para>
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftUser">
+            <summary>
+            禮物用戶
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftName">
+            <summary>
+            禮物名稱
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftNum">
+            <summary>
+            禮物數量
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftCount">
+            <summary>
+            礼物数量
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
+            </list></para>
+            <para>此字段也用于标识上船 <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/> 的数量（月数）</para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.Giftrcost">
+            <summary>
+            当前房间的礼物积分（Room Cost）
+            因以前出现过不传递rcost的礼物，并且用处不大，所以弃用
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftRanking">
+            <summary>
+            禮物排行
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftTop"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.isAdmin">
+            <summary>
+            该用户是否为房管（包括主播）
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.isVIP">
+            <summary>
+            是否VIP用戶(老爺)
+            <para>此项有值的消息类型：<list type="bullet">
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
+            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
+            </list></para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.roomID">
+            <summary>
+            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveStart"/>,<see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveEnd"/> 事件对应的房间号
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.RawData">
+            <summary>
+            原始数据, 高级开发用
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.JSON_Version">
+            <summary>
+            内部用, JSON数据版本号 通常应该是2
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.RawDataJToken">
+            <summary>
+            原始数据, 高级开发用, 如果需要用原始的JSON数据, 建议使用这个而不是用RawData
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.GiftRank.UserName">
+            <summary>
+            用戶名
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.GiftRank.coin">
+            <summary>
+            花銷
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.GiftRank.uid">
+            <summary>
+            UID
+            </summary>
+        </member>
+    </members>
+</doc>
