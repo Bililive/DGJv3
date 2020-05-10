@@ -166,7 +166,7 @@ namespace DGJv3.InternalModule
             return songInfo;
         }
 
-        private static string Fetch(string prot, string host, string path, string data = null, string referer = null)
+        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null)
         {
             for (int retryCount = 0; retryCount < 4; retryCount++)
             {
