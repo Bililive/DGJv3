@@ -16,8 +16,8 @@ namespace DGJv3.InternalModule
         protected void SetServiceName(string name) => ServiceName = name;
 
         private const string API_PROTOCOL = "https://";
-        private const string API_HOST = "api.lwl12.com";
-        private const string API_PATH = "/music/";
+        private const string API_HOST = "v1.itooi.cn";
+        private const string API_PATH = "/";
 
         protected const string INFO_PREFIX = "";
         protected const string INFO_AUTHOR = "Genteure & LWL12";
@@ -44,15 +44,7 @@ namespace DGJv3.InternalModule
 
                 if (dlurlobj["code"].ToString() == "200")
                 {
-                    if (dlurlobj["result"] is JObject)
-                    {
-                        dlurlobj = (JObject)dlurlobj["result"];
-                    }
-                    else
-                    {
-                        dlurlobj = JObject.Parse(dlurlobj["result"].Value<string>());
-                    }
-                    return dlurlobj["url"].ToString();
+                    return $"{API_PROTOCOL}{API_HOST}{API_PATH}{ServiceName}/url?id={songInfo.SongId}";
                 }
                 else
                 {
@@ -71,29 +63,7 @@ namespace DGJv3.InternalModule
         {
             try
             {
-                JObject lobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lyric?id={Id}"));
-                if (lobj["result"] is JObject)
-                {
-                    lobj = (JObject)lobj["result"];
-                }
-                else
-                {
-                    lobj = JObject.Parse(lobj["result"].Value<string>());
-                }
-                if (lobj["lwlyric"] != null)
-                {
-                    return lobj["lwlyric"].ToString();
-                }
-                else if (lobj["tlyric"] != null)
-                {
-                    return lobj["tlyric"].ToString();
-                }
-                else if (lobj["lyric"] != null)
-                {
-                    return lobj["lyric"].ToString();
-                }
-                else
-                { Log("歌词获取错误(id:" + Id + ")"); }
+                return Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lrc?id={Id}");
 
             }
             catch (Exception ex)
@@ -108,11 +78,11 @@ namespace DGJv3.InternalModule
             {
                 List<SongInfo> songInfos = new List<SongInfo>();
 
-                JObject playlist = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/playlist?id={HttpUtility.UrlEncode(keyword)}"));
+                JObject playlist = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/search?id={HttpUtility.UrlEncode(keyword)}&type=songList&pageSize=5&page=0"));
 
                 if (playlist["code"]?.ToObject<int>() == 200)
                 {
-                    List<JToken> result = (playlist["result"] as JArray).ToList();
+                    List<JToken> result = (playlist["data"]["playlists"] as JArray).ToList();
 
                     //if (result.Count() > 50)
                     //    result = result.Take(50).ToList();
@@ -124,7 +94,7 @@ namespace DGJv3.InternalModule
                             var songInfo = new SongInfo(this,
                                 song["id"].ToString(),
                                 song["name"].ToString(),
-                                (song["artist"] as JArray).Select(x => x.ToString()).ToArray());
+                                (song["ar"] as JArray).Select(x => x["name"].ToString()).ToArray());
 
                             songInfo.Lyric = null;//在之后再获取Lyric
 
@@ -153,7 +123,7 @@ namespace DGJv3.InternalModule
             string result_str;
             try
             {
-                result_str = Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/search?keyword={HttpUtility.UrlEncode(keyword)}");
+                result_str = Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/search?keyword={HttpUtility.UrlEncode(keyword)}&type=song&pageSize=5&page=0");
             }
             catch (Exception ex)
             {
@@ -167,7 +137,7 @@ namespace DGJv3.InternalModule
                 JObject info = JObject.Parse(result_str);
                 if (info["code"].ToString() == "200")
                 {
-                    song = (info["result"] as JArray)?[0] as JObject;
+                    song = (info["data"]["songs"] as JArray)?[0] as JObject;
                 }
             }
             catch (Exception ex)
@@ -185,7 +155,7 @@ namespace DGJv3.InternalModule
                     this,
                     song["id"].ToString(),
                     song["name"].ToString(),
-                    (song["artist"] as JArray).Select(x => x.ToString()).ToArray()
+                    (song["ar"] as JArray).Select(x => x["name"].ToString()).ToArray()
                 );
             }
             catch (Exception ex)
@@ -196,7 +166,7 @@ namespace DGJv3.InternalModule
             return songInfo;
         }
 
-        private static string Fetch(string prot, string host, string path, string data = null, string referer = null)
+        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null)
         {
             for (int retryCount = 0; retryCount < 4; retryCount++)
             {
